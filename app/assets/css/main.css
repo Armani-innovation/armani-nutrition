@@ -1,9 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #386641;
+  --color-primary: #386641;
+}
+
+@layer components {
+  .card-item {
+    @apply cursor-pointer bg-white border border-gray-200 rounded-2xl shadow-sm p-6 flex flex-col items-center
+    transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:scale-105;
+  }
+
+  .card-title {
+    @apply text-lg font-semibold text-gray-800;
+  }
 }
 
 body {
-    direction: rtl;
+  direction: rtl;
 }

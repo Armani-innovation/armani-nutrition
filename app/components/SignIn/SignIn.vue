@@ -17,7 +17,7 @@ const phoneError = ref<string>('')
 // ----------------------
 const codeDigits = ref<string[]>(['', '', '', '', ''])
 const otpContainer = ref<HTMLElement | null>(null)
-const shake = ref(false)       // For wrong code animation
+const shake = ref<boolean>(false)       // For wrong code animation
 const otpError = ref<string>('')
 
 // ----------------------
@@ -68,7 +68,7 @@ function onOtpEnter() {
 // Verify OTP code
 // ----------------------
 function verifyCode() {
-  const code = codeDigits.value.join('')
+  const code:string = codeDigits.value.join('')
 
   if (code !== '12345') {  // Demo: only 12345 is correct
     otpError.value = 'کد وارد شده اشتباه است'
