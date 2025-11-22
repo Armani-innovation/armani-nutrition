@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#app'
 
 export function useEncrypt() {
   const config = useRuntimeConfig()
-  const SECRET_KEY = config.ENCRYPT_KEY ?? 'fallback-key'  // همیشه string
+  const SECRET_KEY = config.ENCRYPT_KEY ?? 'fallback-key'
 
   const encrypt = (value: string): string => {
     if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined')
