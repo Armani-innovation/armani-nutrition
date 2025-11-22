@@ -9,7 +9,7 @@
       <div class="row-start-1 row-end-2 col-start-4 col-end-10 content-center justify-items-center">
         <Header/>
       </div>
-      <main class="row-start-3 row-end-13 col-start-4 col-end-10 content-center justify-items-center">
+      <main class="max-h-[75vh] row-start-3 row-end-13 col-start-4 col-end-10 content-center justify-items-center">
         <slot/>
       </main>
     </div>

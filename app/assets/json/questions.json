@@ -1,0 +1,440 @@
+[
+  {
+    "id": 1,
+    "question": "نام و نام خانوادگی",
+    "type": "text",
+    "required": false,
+    "options": [],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 2,
+    "question": "سن",
+    "type": "number",
+    "required": true,
+    "options": [],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 3,
+    "question": "قد (سانتی‌متر)",
+    "type": "number",
+    "required": true,
+    "options": [],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 4,
+    "question": "وزن فعلی (کیلوگرم)",
+    "type": "number",
+    "required": true,
+    "options": [],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 5,
+    "question": "جنسیت",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "مرد",
+      "زن",
+      "ترجیح می‌دهم نگویم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 6,
+    "question": "آیا دچار بیماری خاصی هستید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "دیابت",
+      "چربی خون",
+      "فشار خون",
+      "مشکلات تیروئیدی",
+      "مشکلات گوارشی",
+      "بیماری خاص ندارم"
+    ],
+    "multipleSelect": true,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 7,
+    "question": "آیا سابقه حساسیت یا عدم تحمل غذایی دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "بله",
+      "خیر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": {
+      "if": "بله",
+      "type": "text",
+      "placeholder": "ذکر کنید..."
+    }
+  },
+  {
+    "id": 8,
+    "question": "داروی خاصی مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "بله",
+      "خیر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": {
+      "if": "بله",
+      "type": "text",
+      "placeholder": "نام داروها..."
+    }
+  },
+  {
+    "id": 9,
+    "question": "چند وعده غذایی در روز مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "۱ وعده اصلی",
+      "۲ وعده",
+      "۳ وعده بدون میان‌وعده",
+      "۳ وعده با میان‌وعده"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 10,
+    "question": "به‌طور میانگین چقدر نان در روز مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "اصلاً",
+      "۱ تا ۲ واحد",
+      "۳ تا ۴ واحد",
+      "بیشتر از ۴ واحد"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 11,
+    "question": "میزان مصرف روزانه برنج:",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "اصلاً",
+      "کمتر از ۵ قاشق",
+      "۵ تا ۱۰ قاشق",
+      "بیشتر از ۱۰ قاشق"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 12,
+    "question": "در هفته چند بار گوشت مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کمتر از ۲ بار",
+      "۳ تا ۵ بار",
+      "روزانه",
+      "گیاه‌خوار هستم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 13,
+    "question": "چقدر سبزیجات تازه در روز مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کمتر از ۱ وعده",
+      "۱ تا ۲ وعده",
+      "۳ وعده یا بیشتر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 14,
+    "question": "مصرف غذاهای فرآوری‌شده:",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "روزانه",
+      "چند بار در هفته",
+      "کمتر از یک‌بار در هفته",
+      "هرگز"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 15,
+    "question": "از نوشیدنی‌های زیر کدام را بیشتر مصرف می‌کنید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "آب",
+      "چای",
+      "نوشابه",
+      "آب‌میوه صنعتی",
+      "قهوه",
+      "نوشیدنی انرژی‌زا"
+    ],
+    "multipleSelect": true,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 16,
+    "question": "چقدر در روز آب می‌نوشید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کمتر از ۱ لیتر",
+      "۱ تا ۲ لیتر",
+      "۲ تا ۳ لیتر",
+      "بیشتر از ۳ لیتر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 17,
+    "question": "چند ساعت در شب می‌خوابید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کمتر از ۵ ساعت",
+      "۵ تا ۷ ساعت",
+      "۷ تا ۹ ساعت",
+      "بیشتر از ۹ ساعت"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 18,
+    "question": "الگوی خواب شما چطور است؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "منظم و شبانه",
+      "نامنظم",
+      "بیدارخوابی یا شب‌بیداری زیاد",
+      "دچار بی‌خوابی هستم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 19,
+    "question": "در طول هفته چند روز فعالیت فیزیکی دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "هیچ",
+      "۱ تا ۲ روز",
+      "۳ تا ۴ روز",
+      "۵ روز یا بیشتر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 20,
+    "question": "شدت فعالیت شما چقدر است؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "سبک",
+      "متوسط",
+      "سنگین",
+      "خیلی سنگین"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 21,
+    "question": "بیشترین زمان خوردن شما کی است؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "صبح",
+      "ظهر",
+      "عصر و شب",
+      "در زمان استرس یا بی‌حوصلگی"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 22,
+    "question": "در طول روز چه احساسی نسبت به غذا دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "احساس گرسنگی مداوم",
+      "بی‌اشتها",
+      "ولع به شیرینی",
+      "طبیعی"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 23,
+    "question": "آیا علائم گوارشی خاصی دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "یبوست",
+      "نفخ",
+      "سوزش معده",
+      "اسهال",
+      "هیچ‌کدام"
+    ],
+    "multipleSelect": true,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 24,
+    "question": "چقدر احساس خستگی یا خواب‌آلودگی بعد غذا دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "شدید",
+      "متوسط",
+      "گاهی",
+      "اصلاً"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 25,
+    "question": "احساس سیری پس از وعده‌ها:",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "سریع سیر می‌شوم",
+      "دیر سیر می‌شوم",
+      "معمولی",
+      "اغلب سیر نمی‌شوم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 26,
+    "question": "هدف اصلی شما از دریافت برنامه چیست؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کاهش چربی بدن",
+      "افزایش انرژی",
+      "بهبود عملکرد ورزشی",
+      "درمان یا کنترل بیماری",
+      "تغییر سبک زندگی به سالم‌تر"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 27,
+    "question": "چه نوع غذاهایی را بیشتر می‌پسندید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "ایرانی سنتی",
+      "غذاهای فرنگی سالم",
+      "غذاهای تند و ادویه‌دار",
+      "گیاهی / رژیمی / سبک"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 28,
+    "question": "چقدر وقت برای تهیه غذا دارید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "کمتر از ۳۰ دقیقه",
+      "حدود ۱ ساعت",
+      "بیش از ۱ ساعت",
+      "ترجیح می‌دهم آماده بخرم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 29,
+    "question": "در تهیه غذا به چه عواملی اهمیت می‌دهید؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "طعم و مزه",
+      "زمان و سادگی",
+      "ارزش تغذیه‌ای و کالری",
+      "همه موارد"
+    ],
+    "multipleSelect": true,
+    "placeholder": null,
+    "followUp": null
+  },
+  {
+    "id": 30,
+    "question": "مهم‌ترین مانع شما برای داشتن تغذیه سالم چیست؟",
+    "type": "multiple-choice",
+    "required": true,
+    "options": [
+      "وقت نداشتن",
+      "نداشتن انگیزه",
+      "پرخوری عصبی",
+      "دسترسی نداشتن به غذاهای سالم"
+    ],
+    "multipleSelect": false,
+    "placeholder": null,
+    "followUp": null
+  }
+]
