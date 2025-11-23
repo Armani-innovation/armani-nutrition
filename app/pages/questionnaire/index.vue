@@ -2,6 +2,7 @@
 import {ref, onMounted} from 'vue'
 import type {Question} from '~/types/questionnaire'
 import rawQuestions from '~/assets/json/questions.json'
+import {navigateTo} from "#app";
 
 const questions = ref<Question[]>(rawQuestions as Question[])
 const answers = ref<Record<number, any>>({})
@@ -28,7 +29,7 @@ function handleSubmit() {
     answer: answers.value[q.id] ?? null,
   }))
   console.log("پاسخ‌ها:", payload)
-  alert("پرسشنامه با موفقیت ارسال شد!")
+  navigateTo('/paypage')
 }
 
 onMounted(() => {
@@ -129,7 +130,7 @@ onMounted(() => {
       <button
           type="button"
           @click="handleSubmit"
-          class="w-full bg-primary text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm sm:text-base"
+          class="w-full bg-primary text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-green-900 hover:shadow-lg hover:scale-101 cursor-pointer text-sm sm:text-base"
       >
         ارسال
       </button>

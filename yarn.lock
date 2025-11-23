@@ -874,6 +874,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lottiefiles/dotlottie-vue@npm:^0.10.8":
+  version: 0.10.8
+  resolution: "@lottiefiles/dotlottie-vue@npm:0.10.8"
+  dependencies:
+    "@lottiefiles/dotlottie-web": "npm:0.57.0"
+  peerDependencies:
+    vue: ^3.3.4
+  checksum: 10c0/3a779eacf8e2cf76b9553e636fb37ff8b9e70d399f1407ee735ad77705f324061ae28ebf8fcfec3c5b57eb57be0e229ab89fb296868fe130fecb6093c948433f
+  languageName: node
+  linkType: hard
+
+"@lottiefiles/dotlottie-web@npm:0.57.0":
+  version: 0.57.0
+  resolution: "@lottiefiles/dotlottie-web@npm:0.57.0"
+  checksum: 10c0/0d9b6fa450ccae5de6ced375cfced383733a90250c1d2c0cee95e4b1533e4ec0a1c37b75439cf6e956d2369980697a779ba31dd31527f9e67ff936569e59f689
+  languageName: node
+  linkType: hard
+
 "@mapbox/node-pre-gyp@npm:^2.0.0":
   version: 2.0.0
   resolution: "@mapbox/node-pre-gyp@npm:2.0.0"
@@ -2754,6 +2772,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "armani-nutrition@workspace:."
   dependencies:
+    "@lottiefiles/dotlottie-vue": "npm:^0.10.8"
     "@nuxt/image": "npm:2.0.0"
     "@tailwindcss/vite": "npm:^4.1.17"
     "@types/crypto-js": "npm:^4.2.2"

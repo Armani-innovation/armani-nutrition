@@ -49,17 +49,17 @@ onMounted(() => {
     </div>
 
     <!-- Cards section -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
       <div class="card-item">
         <div class="text-4xl mb-4">💰</div>
         <h2 class="card-title">سوابق مالی</h2>
       </div>
 
-      <div class="card-item">
-        <div class="text-4xl mb-4">💳</div>
-        <h2 class="card-title">شارژ کیف پول</h2>
-      </div>
+<!--      <div class="card-item">-->
+<!--        <div class="text-4xl mb-4">💳</div>-->
+<!--        <h2 class="card-title">شارژ کیف پول</h2>-->
+<!--      </div>-->
 
       <div class="card-item">
         <div class="text-4xl mb-4">🥗</div>
@@ -79,7 +79,7 @@ onMounted(() => {
       <NuxtLink
           to="/questionnaire"
           class="bg-primary text-white px-8 py-3 rounded-xl text-lg font-medium
-               transition-all duration-300 hover:bg-[#2e5133] hover:shadow-lg hover:scale-105 cursor-pointer"
+               transition-all duration-300 hover:bg-green-900 hover:shadow-lg hover:scale-105 cursor-pointer"
       >
         شروع گزارش‌گیری
       </NuxtLink>
