@@ -139,16 +139,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Scrollbar مینیمال */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #386641;
-  border-radius: 3px;
-}
-
 /* انیمیشن FollowUp */
 .fade-slide-enter-active,
 .fade-slide-leave-active {

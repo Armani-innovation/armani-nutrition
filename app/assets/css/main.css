@@ -18,3 +18,20 @@
 body {
   direction: rtl;
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #386641;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track-piece:start {
+  margin-top: 15px;
+}
+
+::-webkit-scrollbar-track-piece:end {
+  margin-bottom: 15px;
+}

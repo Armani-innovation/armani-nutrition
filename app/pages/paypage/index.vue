@@ -49,12 +49,12 @@ const discountText = ref<string>("");
         </div>
 
         <!-- Pay Button -->
-        <button
-            class="w-full py-3 rounded-xl font-medium text-white transition hover:opacity-90 cursor-pointer"
-            style="background-color: #386641;"
+        <NuxtLink
+            class="w-full block text-center bg-primary py-3 rounded-xl font-medium text-white transition hover:opacity-90"
+            to="/result"
         >
           پرداخت و مشاهده نتیجه
-        </button>
+        </NuxtLink>
       </div>
     </div>
   </div>
