@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useEncrypt } from '~/composables/encodePhone'
+import {ref, onMounted} from 'vue'
+import {useEncrypt} from '~/composables/encodePhone'
 
 const route = useRoute()
-const { decrypt } = useEncrypt()
+const {decrypt} = useEncrypt()
 
 const decryptedPhone = ref<string>('')
 const walletBalance = ref<number>(125000)
@@ -51,20 +51,20 @@ onMounted(() => {
     <!-- Cards section -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
-      <div class="card-item">
+      <NuxtLink to="" class="card-item">
         <div class="text-4xl mb-4">💰</div>
         <h2 class="card-title">سوابق مالی</h2>
-      </div>
+      </NuxtLink>
 
-<!--      <div class="card-item">-->
-<!--        <div class="text-4xl mb-4">💳</div>-->
-<!--        <h2 class="card-title">شارژ کیف پول</h2>-->
-<!--      </div>-->
+      <!--      <div class="card-item">-->
+      <!--        <div class="text-4xl mb-4">💳</div>-->
+      <!--        <h2 class="card-title">شارژ کیف پول</h2>-->
+      <!--      </div>-->
 
-      <div class="card-item">
+      <NuxtLink to="/reportsHistory" class="card-item">
         <div class="text-4xl mb-4">🥗</div>
         <h2 class="card-title">سوابق تغذیه</h2>
-      </div>
+      </NuxtLink>
 
     </div>
 
