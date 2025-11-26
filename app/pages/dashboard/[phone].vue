@@ -51,7 +51,7 @@ onMounted(() => {
     <!-- Cards section -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
 
-      <NuxtLink to="" class="card-item">
+      <NuxtLink to="/paymentsHistory" class="card-item">
         <div class="text-4xl mb-4">💰</div>
         <h2 class="card-title">سوابق مالی</h2>
       </NuxtLink>

@@ -1,3 +1,19 @@
+<script setup lang="ts">
+const phone = "09123456789";
+const reportCount = 14;
+
+const reports = [
+  {date: "1403/11/01", time: "14:20", payment: "paid", status: "done"},
+  {date: "1403/10/28", time: "10:55", payment: "unpaid", status: "pending"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+];
+</script>
+
 <template>
   <div class="bg-white p-4 sm:p-6 animate-fade-in rounded-2xl">
     <!-- Header -->
@@ -10,16 +26,16 @@
 
     <!-- User Info Card -->
     <section
-        class="bg-gray-50 rounded-2xl shadow-md p-4 sm:p-6 mb-6 sm:mb-10 border border-gray-100 animate-scale-in"
+        class="bg-primary rounded-2xl shadow-md p-4 sm:p-6 mb-6 sm:mb-10 border border-gray-100 animate-scale-in"
     >
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-white">
         <div class="space-y-1">
-          <p class="text-sm text-gray-500">شماره تلفن</p>
-          <p class="text-lg font-semibold text-primary">{{ phone }}</p>
+          <p class="text-sm">شماره تلفن</p>
+          <p class="text-lg font-semibold">{{ phone }}</p>
         </div>
         <div class="space-y-1">
-          <p class="text-sm text-gray-500">تعداد گزارش‌ها</p>
-          <p class="text-lg font-semibold text-primary">{{ reportCount }}</p>
+          <p class="text-sm">تعداد گزارش‌ها</p>
+          <p class="text-lg font-semibold">{{ reportCount }}</p>
         </div>
       </div>
     </section>
@@ -30,7 +46,7 @@
       <div class="hidden md:block bg-white rounded-2xl shadow-md border border-gray-100 animate-fade-in overflow-x-auto">
         <div class="overflow-y-auto max-h-[250px]">
           <table class="w-full text-right table-auto min-w-[600px]">
-            <thead class="bg-gray-100 text-gray-600 text-sm sticky top-0 z-10">
+            <thead class="bg-primary text-white text-sm sticky top-0 z-10">
             <tr>
               <th class="p-4">تاریخ</th>
               <th class="p-4">ساعت</th>
@@ -94,22 +110,6 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-const phone = "09123456789";
-const reportCount = 14;
-
-const reports = [
-  {date: "1403/11/01", time: "14:20", payment: "paid", status: "done"},
-  {date: "1403/10/28", time: "10:55", payment: "unpaid", status: "pending"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-  {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-];
-</script>
 
 <style scoped>
 .text-primary {

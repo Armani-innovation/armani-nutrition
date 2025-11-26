@@ -13,7 +13,7 @@ const discountText = ref<string>("");
       <div class="text-center space-y-2">
         <h1 class="text-2xl font-semibold text-gray-800">تکمیل پرسشنامه</h1>
         <p class="text-gray-600 text-sm leading-relaxed">
-          شما با موفقیت تمام سوالات پرسشنامه را پاسخ دادید. برای مشاهده نتیجه و دریافت تحلیل برندینگ، لطفاً پرداخت را
+          شما با موفقیت تمام سوالات پرسشنامه را پاسخ دادید. برای مشاهده نتیجه و دریافت تحلیل سوالات، لطفاً پرداخت را
           انجام دهید.
         </p>
         <TickCheck/>
