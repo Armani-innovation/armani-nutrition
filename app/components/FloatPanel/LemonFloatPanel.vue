@@ -1,32 +1,45 @@
 <script setup lang="ts">
-import {navigateTo} from "#app";
-import {useRoute} from "#vue-router";
+import {useRoute, useRouter} from "#vue-router"
 
-const router = useRoute()
+type langs = "fa" | "en" | "ar"
 
+// Router
+const route = useRoute()
+const router = useRouter()
+
+// i18n
+const {setLocale} = useI18n()
+
+// Navbar options
 const options = [
-  {label: 'Dashboard', emoji: '🏠'},
+  {label: $t("navbar.dashboard"), emoji: "🏠"},
   {
-    label: 'Language',
-    emoji: '🌐',
+    label: $t("navbar.language"),
+    emoji: "🌐",
     subOptions: [
-      {label: 'English', emoji: '🇺🇲'},
-      {label: 'Persian', emoji: '🇮🇷'},
-      {label: 'Spanish', emoji: '🇸🇦'}
+      {label: "English", emoji: "🇺🇲", code: "en"},
+      {label: "Persian", emoji: "🇮🇷", code: "fa"},
+      {label: "Arabic", emoji: "🇸🇦", code: "ar"}
     ]
   },
-  {label: 'Logout', emoji: '🚪'}
+  {label: $t("navbar.logout"), emoji: "🚪"}
 ]
 
+// Navigate functions
 function navigateToHome() {
-  if (router.path !== '/')
-    navigateTo('/dashboard');
+  if (route.path !== "/dashboard") router.push("/dashboard")
 }
 
 function logOut(): void {
-  navigateTo("/")
   sessionStorage.clear()
+  router.push("/")
 }
+
+// Change language
+function changeLang(code: langs) {
+  setLocale(code)
+}
+
 </script>
 
 <template>
@@ -36,62 +49,47 @@ function logOut(): void {
 
       <!-- Main Tab -->
       <div
-          class="
-          w-5 h-16
-          rounded-r-full
-          shadow-md
-          cursor-pointer
-          transition-all duration-300
-          group-hover:w-7
-        "
+          class="w-5 h-16 rounded-r-full shadow-md cursor-pointer transition-all duration-300 group-hover:w-7"
           :style="{ background: 'linear-gradient(to bottom, var(--color-primary), #5a8d60)' }"
       />
 
       <!-- Floating Options -->
       <div
-          class="
-          absolute left-6 top-1/2 -translate-y-1/2
-          opacity-0 pointer-events-none
-          transition-all duration-300
-          group-hover:opacity-100
-          group-hover:pointer-events-auto
-        "
+          class="absolute left-6 top-1/2 -translate-y-1/2
+               opacity-0 pointer-events-none
+               transition-all duration-300
+               group-hover:opacity-100
+               group-hover:pointer-events-auto"
       >
         <div class="relative flex flex-col gap-2">
 
-          <button
-              class="navbar-btn"
-              @click="navigateToHome"
-          >
+          <!-- Dashboard -->
+          <button class="navbar-btn" @click="navigateToHome">
             🏠
           </button>
 
+          <!-- Language Menu -->
           <div class="relative left-5 group/lang">
-            <button
-                class="navbar-btn"
-            >
-              🌐
-            </button>
+            <button class="navbar-btn">🌐</button>
 
             <div
                 class="absolute left-full top-1/2 -translate-y-1/2 pl-2 flex flex-col gap-2
-                   opacity-0 pointer-events-none transition-all duration-300
-                   group-hover/lang:opacity-100 group-hover/lang:pointer-events-auto"
+                     opacity-0 pointer-events-none transition-all duration-300
+                     group-hover/lang:opacity-100 group-hover/lang:pointer-events-auto"
             >
               <button
                   v-for="sub in options[1]?.subOptions"
-                  :key="sub.label"
+                  :key="sub.code"
                   class="navbar-btn"
+                  @click="changeLang(sub.code)"
               >
                 {{ sub.emoji }}
               </button>
             </div>
           </div>
 
-          <button
-              class="navbar-btn"
-              @click="logOut"
-          >
+          <!-- Logout -->
+          <button class="navbar-btn" @click="logOut">
             🚪
           </button>
 
@@ -100,3 +98,7 @@ function logOut(): void {
     </div>
   </div>
 </template>
+
+<style scoped>
+
+</style>

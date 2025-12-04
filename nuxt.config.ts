@@ -1,9 +1,10 @@
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+  modules: ["@nuxt/image", '@nuxtjs/i18n'],
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
-  css : ['~/assets/css/main.css'],
+  devtools: {enabled: true},
+  css: ['~/assets/css/main.css'],
 
   vite: {
     plugins: [
@@ -16,5 +17,13 @@ export default defineNuxtConfig({
     public: {}
   },
 
-  modules: ["@nuxt/image"],
+  i18n: {
+    defaultLocale: 'fa',
+    locales: [
+      { code: 'fa', name: 'Persian', file: 'fa.json' },
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'ar', name: 'Arabic', file: 'ar.json' }
+    ]
+  }
+
 });

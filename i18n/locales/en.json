@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "phone": "Phone Number",
+    "wallet": "Wallet Balance",
+    "currency": "Toman",
+
+    "cards": {
+      "payments": "Payment History",
+      "nutrition": "Nutrition Reports"
+    },
+
+    "report": {
+      "title": "Reporting",
+      "description": "Get a detailed report of your performance.",
+      "start": "Start Reporting"
+    }
+  }
+}
