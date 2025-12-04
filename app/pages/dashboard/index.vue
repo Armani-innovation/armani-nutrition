@@ -1,24 +1,15 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
-import {useEncrypt} from '~/composables/encodePhone'
+import {onMounted, ref} from 'vue'
 
-const route = useRoute()
-const {decrypt} = useEncrypt()
-
-const decryptedPhone = ref<string>('')
+const phone = ref<string>('')
 const walletBalance = ref<number>(125000)
 
-// Function to decrypt phone number from route params
-function decryptPhone() {
-  const encryptedPhone = route.params.phone as string
-  if (encryptedPhone) {
-    decryptedPhone.value = decrypt(decodeURIComponent(encryptedPhone))
-  }
+function fetchInfos() {
+  phone.value = sessionStorage.getItem('phone') || ""
 }
 
-// Run decryption on mount
 onMounted(() => {
-  decryptPhone()
+  fetchInfos()
 })
 </script>
 
@@ -35,7 +26,7 @@ onMounted(() => {
         <div>
           <p class="text-gray-500 text-sm">شماره تماس</p>
           <p class="text-xl font-semibold text-gray-800">
-            {{ decryptedPhone }}
+            {{ phone }}
           </p>
         </div>
 

@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import {ref, nextTick} from 'vue'
 import {navigateTo} from "#app";
-import {useEncrypt} from "~/composables/encodePhone";
-
-const {encrypt} = useEncrypt()
 
 // ----------------------
 // State: Phone Number
@@ -68,7 +65,7 @@ function onOtpEnter() {
 // Verify OTP code
 // ----------------------
 function verifyCode() {
-  const code:string = codeDigits.value.join('')
+  const code: string = codeDigits.value.join('')
 
   if (code !== '12345') {  // Demo: only 12345 is correct
     otpError.value = 'کد وارد شده اشتباه است'
@@ -78,8 +75,8 @@ function verifyCode() {
   }
 
   otpError.value = ''
-  const encryptedPhone = encrypt(phone.value)
-  navigateTo(`/dashboard/${encodeURIComponent(encryptedPhone)}`)
+  sessionStorage.setItem('phone', phone.value)
+  navigateTo("/dashboard")
 }
 
 // ----------------------
@@ -142,6 +139,19 @@ function handleBackspace(index: number, event: KeyboardEvent) {
     }
   }
 }
+
+function editPhone() {
+  step.value = 1
+  otpError.value = ''
+  shake.value = false
+  codeDigits.value = ['', '', '', '', '']
+
+  nextTick(() => {
+    // فوکوس روی ورودی شماره موبایل
+    const phoneInput = document.querySelector('input[type="tel"]') as HTMLInputElement
+    phoneInput?.focus()
+  })
+}
 </script>
 
 <template>
@@ -197,7 +207,7 @@ function handleBackspace(index: number, event: KeyboardEvent) {
 
         <div class="flex gap-2 justify-center mb-3" style="direction: ltr">
           <input
-              v-for="(digit, index) in codeDigits"
+              v-for="(_, index) in codeDigits"
               :key="index"
               :data-otp="index"
               v-model="codeDigits[index]"
@@ -225,6 +235,12 @@ function handleBackspace(index: number, event: KeyboardEvent) {
         >
           ورود
         </button>
+        <p
+            @click="editPhone"
+            class="text-xs sm:text-sm text-primary cursor-pointer my-3"
+        >
+          اصلاح شماره تلفن
+        </p>
       </div>
 
     </transition>

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {navigateTo} from "#app";
+import {useRoute} from "#vue-router";
+
+const router = useRoute()
+
 const options = [
   {label: 'Dashboard', emoji: '🏠'},
   {
@@ -13,6 +18,15 @@ const options = [
   {label: 'Logout', emoji: '🚪'}
 ]
 
+function navigateToHome() {
+  if (router.path !== '/')
+    navigateTo('/dashboard');
+}
+
+function logOut(): void {
+  navigateTo("/")
+  sessionStorage.clear()
+}
 </script>
 
 <template>
@@ -47,6 +61,7 @@ const options = [
 
           <button
               class="navbar-btn"
+              @click="navigateToHome"
           >
             🏠
           </button>
@@ -75,6 +90,7 @@ const options = [
 
           <button
               class="navbar-btn"
+              @click="logOut"
           >
             🚪
           </button>
