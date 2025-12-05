@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {ref, nextTick} from 'vue'
-import {navigateTo} from "#app";
+import { ref, nextTick } from 'vue'
+import { navigateTo } from "#app"
 
 // ----------------------
 // State: Phone Number
@@ -14,45 +14,44 @@ const phoneError = ref<string>('')
 // ----------------------
 const codeDigits = ref<string[]>(['', '', '', '', ''])
 const otpContainer = ref<HTMLElement | null>(null)
-const shake = ref<boolean>(false)       // For wrong code animation
+const shake = ref<boolean>(false)
 const otpError = ref<string>('')
 
 // ----------------------
-// Validate phone number (real-time)
+// Validate phone number
 // ----------------------
 function validatePhone() {
   if (!phone.value) {
-    phoneError.value = 'شماره را وارد کنید'
+    phoneError.value = $t("signin.phoneRequired")
     return
   }
 
   const phoneRegex = /^09\d{9}$/
-
-  phoneError.value = phoneRegex.test(phone.value) ? '' : 'شماره موبایل معتبر نیست'
+  phoneError.value = phoneRegex.test(phone.value)
+      ? ''
+      : $t("signin.phoneInvalid")
 }
 
 // ----------------------
-// Move to OTP step
+// Go to OTP
 // ----------------------
 function goToStep2() {
   phoneError.value = ''
 
   if (!phone.value) {
-    phoneError.value = 'لطفاً شماره تلفن را وارد کنید'
+    phoneError.value = $t("signin.phoneRequired")
     return
   }
 
   const phoneRegex = /^09\d{9}$/
   if (!phoneRegex.test(phone.value)) {
-    phoneError.value = 'شماره موبایل معتبر نیست'
+    phoneError.value = $t("signin.phoneInvalid")
     return
   }
 
   step.value = 2
 }
 
-// ----------------------
-// After OTP animation → focus first input
 // ----------------------
 function onOtpEnter() {
   nextTick(() => {
@@ -62,13 +61,11 @@ function onOtpEnter() {
 }
 
 // ----------------------
-// Verify OTP code
-// ----------------------
 function verifyCode() {
   const code: string = codeDigits.value.join('')
 
-  if (code !== '12345') {  // Demo: only 12345 is correct
-    otpError.value = 'کد وارد شده اشتباه است'
+  if (code !== '12345') {
+    otpError.value = $t("signin.otpInvalid")
     shake.value = true
     setTimeout(() => (shake.value = false), 400)
     return
@@ -80,66 +77,52 @@ function verifyCode() {
 }
 
 // ----------------------
-// OTP Input Handler
-// ----------------------
 function handleOtpInput(index: number, event: InputEvent) {
-  const target = event.target
-  if (!(target instanceof HTMLInputElement)) return
+  const input = event.target as HTMLInputElement
+  if (!input) return
 
-  const input = target
-  let value = input.value
-
-  // Only allow digits, max 1 char
-  value = value.replace(/[^0-9]/g, '').slice(0, 1)
+  let value = input.value.replace(/\D/g, '').slice(0, 1)
   input.value = value
   codeDigits.value[index] = value
 
-  // Reset OTP error on typing
   otpError.value = ''
 
-  // Handle paste
+  // Paste
   if (event.inputType === 'insertFromPaste') {
-    const pasted = (event.data ?? '').replace(/\D/g, '').slice(0, codeDigits.value.length)
-    pasted.split('').forEach((char, i) => (codeDigits.value[i] = char))
+    const pasted = (event.data ?? '').replace(/\D/g, '').slice(0, 5)
+    pasted.split('').forEach((d, i) => (codeDigits.value[i] = d))
 
     nextTick(() => {
-      const lastIndex = pasted.length - 1
-      const lastInput = otpContainer.value?.querySelector<HTMLInputElement>(
-          `input[data-otp="${lastIndex}"]`
+      const last = otpContainer.value?.querySelector<HTMLInputElement>(
+          `input[data-otp="${pasted.length - 1}"]`
       )
-      lastInput?.focus()
+      last?.focus()
     })
 
-    if (pasted.length === codeDigits.value.length) verifyCode()
-    return
+    if (pasted.length === 5) verifyCode()
   }
 
-  // Move focus to next input
-  if (value && index < codeDigits.value.length - 1) {
-    const nextInput = input.nextElementSibling as HTMLInputElement | null
-    nextInput?.focus()
+  if (value && index < 4) {
+    const next = input.nextElementSibling as HTMLInputElement
+    next?.focus()
   }
 
-  // Auto-verify when all digits filled
   if (codeDigits.value.every(d => d !== '')) verifyCode()
 }
 
 // ----------------------
-// Backspace handler
-// ----------------------
 function handleBackspace(index: number, event: KeyboardEvent) {
   if (event.key === 'Backspace') {
-    // Reset OTP error on delete
     otpError.value = ''
-
-    // If current input empty → move to previous
     if (codeDigits.value[index] === '' && index > 0) {
-      const prev = (event.target as HTMLInputElement).previousElementSibling as HTMLInputElement
+      const prev = (event.target as HTMLInputElement)
+          .previousElementSibling as HTMLInputElement
       prev?.focus()
     }
   }
 }
 
+// ----------------------
 function editPhone() {
   step.value = 1
   otpError.value = ''
@@ -147,7 +130,6 @@ function editPhone() {
   codeDigits.value = ['', '', '', '', '']
 
   nextTick(() => {
-    // فوکوس روی ورودی شماره موبایل
     const phoneInput = document.querySelector('input[type="tel"]') as HTMLInputElement
     phoneInput?.focus()
   })
@@ -157,9 +139,10 @@ function editPhone() {
 <template>
   <div class="w-full max-w-sm sm:max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 mx-4 sm:mx-auto">
 
-    <h1 class="text-2xl sm:text-3xl font-semibold text-primary text-center mb-6">ورود</h1>
+    <h1 class="text-2xl sm:text-3xl font-semibold text-primary text-center mb-6">
+      {{ $t("signin.title") }}
+    </h1>
 
-    <!-- Slide Transition -->
     <transition
         mode="out-in"
         enter-active-class="transition-all duration-300 ease-out"
@@ -171,107 +154,98 @@ function editPhone() {
         @after-enter="onOtpEnter"
     >
 
-      <!-- Step 1: Phone Number -->
+      <!-- Step 1 -->
       <div v-if="step === 1" key="step1">
-        <label class="block text-sm sm:text-base text-gray-700 mb-2">شماره تلفن خود را وارد کنید</label>
+        <label class="block text-sm sm:text-base text-gray-700 mb-2">
+          {{ $t("signin.phoneLabel") }}
+        </label>
 
         <input
             v-model="phone"
             @input="validatePhone"
             type="tel"
-            placeholder="مثال: 09123456789"
+            :placeholder="$t('signin.phonePlaceholder')"
             maxlength="11"
-            :class="[
-            'w-full px-4 py-3 rounded-xl border transition text-sm sm:text-base focus:outline-none',
-            phoneError
+            class="w-full px-4 py-3 rounded-xl border transition focus:outline-none"
+            :class="phoneError
               ? 'border-red-500 focus:ring-red-400'
-              : 'border-gray-300 focus:ring-primary focus:border-primary'
-          ]"
+              : 'border-gray-300 focus:ring-primary focus:border-primary'"
         />
 
-        <p v-if="phoneError" class="text-red-500 text-sm mt-1">{{ phoneError }}</p>
+        <p v-if="phoneError" class="text-red-500 text-sm mt-1">
+          {{ phoneError }}
+        </p>
 
         <button
             @click="goToStep2"
             :disabled="!!phoneError || !phone"
-            class="w-full mt-4 bg-primary text-white py-3 rounded-xl transition text-sm sm:text-base
-                 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#2e5133] cursor-pointer"
+            class="w-full mt-4 bg-primary text-white py-3 rounded-xl transition
+            disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#2e5133]"
         >
-          دریافت کد تایید
+          {{ $t("signin.sendCode") }}
         </button>
       </div>
 
-      <!-- Step 2: OTP -->
+      <!-- Step 2 -->
       <div v-else key="step2" ref="otpContainer" :class="shake ? 'animate-shake' : ''">
-        <label class="block text-sm sm:text-base text-gray-700 mb-2">کد تایید را وارد کنید</label>
 
-        <div class="flex gap-2 justify-center mb-3" style="direction: ltr">
+        <label class="block text-sm sm:text-base text-gray-700 mb-2">
+          {{ $t("signin.otpLabel") }}
+        </label>
+
+        <div class="flex gap-2 justify-center mb-3" style="direction:ltr">
           <input
               v-for="(_, index) in codeDigits"
               :key="index"
-              :data-otp="index"
               v-model="codeDigits[index]"
-              type="text"
+              :data-otp="index"
               maxlength="1"
+              type="text"
               dir="ltr"
-              class="w-10 sm:w-12 h-10 sm:h-12 text-center text-lg rounded-xl border
-              transition transform duration-150 focus:scale-105 focus:outline-none"
-              :class="{
-                'border-gray-300 focus:ring-primary focus:border-primary': !otpError,
-                'border-red-500 ring-1 ring-red-400': otpError
-              }"
-              @input="handleOtpInput(index, $event)"
-              @keydown="handleBackspace(index, $event)"
+              class="w-10 sm:w-12 h-10 sm:h-12 text-center text-lg rounded-xl border transition focus:scale-105"
+              :class="otpError
+              ? 'border-red-500 ring-1 ring-red-400'
+              : 'border-gray-300 focus:ring-primary focus:border-primary'"
+              @input="handleOtpInput(index,$event)"
+              @keydown="handleBackspace(index,$event)"
           />
         </div>
 
-        <p v-if="otpError" class="text-red-500 text-sm text-center -mt-2 mb-3">
+        <p v-if="otpError" class="text-red-500 text-sm text-center mb-3">
           {{ otpError }}
         </p>
 
         <button
             @click="verifyCode"
-            class="w-full bg-primary text-white py-3 rounded-xl hover:bg-[#2e5133] transition text-sm sm:text-base cursor-pointer"
+            class="w-full bg-primary text-white py-3 rounded-xl hover:bg-[#2e5133]"
         >
-          ورود
+          {{ $t("signin.login") }}
         </button>
-        <p
-            @click="editPhone"
-            class="text-xs sm:text-sm text-primary cursor-pointer my-3"
-        >
-          اصلاح شماره تلفن
+
+        <p class="text-xs sm:text-sm text-primary cursor-pointer my-3" @click="editPhone">
+          {{ $t("signin.editPhone") }}
         </p>
+
       </div>
 
     </transition>
 
     <p class="text-center text-xs sm:text-sm text-gray-500 mt-4">
-      با ورود، قوانین و شرایط را می‌پذیرید.
+      {{ $t("signin.terms") }}
     </p>
+
   </div>
 </template>
 
 <style scoped>
-/* Shake animation for wrong code */
 @keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-6px);
-  }
-  50% {
-    transform: translateX(6px);
-  }
-  75% {
-    transform: translateX(-6px);
-  }
-  100% {
-    transform: translateX(0);
-  }
+  0% { transform: translateX(0) }
+  25% { transform: translateX(-6px) }
+  50% { transform: translateX(6px) }
+  75% { transform: translateX(-6px) }
+  100% { transform: translateX(0) }
 }
-
 .animate-shake {
-  animation: shake 0.3s ease-in-out;
+  animation: shake .3s ease-in-out;
 }
 </style>
