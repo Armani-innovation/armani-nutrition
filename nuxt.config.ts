@@ -18,12 +18,23 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    strategy: 'no_prefix',
     defaultLocale: 'fa',
+
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      alwaysRedirect: false,
+      fallbackLocale: 'fa'
+    },
+
     locales: [
-      { code: 'fa', name: 'Persian', file: 'fa.json' },
-      { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'ar', name: 'Arabic', file: 'ar.json' }
-    ]
+      {code: 'fa', name: 'Persian', file: 'fa.json'},
+      {code: 'en', name: 'English', file: 'en.json'},
+      {code: 'ar', name: 'Arabic', file: 'ar.json'}
+    ],
+
+    langDir: 'locales/'
   }
 
 });

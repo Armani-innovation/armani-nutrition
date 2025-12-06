@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { watch } from "vue"
-import { useI18n } from "#imports"
+import {watch} from "vue"
+import {useI18n} from "#imports"
 
-const { locale } = useI18n()
+const {locale} = useI18n()
 
 if (process.client) {
   watch(
@@ -10,7 +10,7 @@ if (process.client) {
       (lang) => {
         document.documentElement.dir = lang === "fa" || lang === "ar" ? "rtl" : "ltr"
       },
-      { immediate: true }
+      {immediate: true}
   )
 }
 

@@ -5,7 +5,7 @@
 <template>
   <header>
     <h1 class="text-primary text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-      پلتفرم هوشمند تغذیه
+      {{ $t("webTitle") }}
     </h1>
   </header>
 </template>
