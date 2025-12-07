@@ -1,9 +1,16 @@
 {
-  "webTitle" : "Smart Nutrition Platform",
+  "webTitle": "Smart Nutrition Platform",
   "signin": {
     "title": "Sign In",
     "phoneLabel": "Enter your phone number",
-    "phonePlaceholder": "Example: 09123456789",
+    "dialCodes": {
+      "title": "Choose your country",
+      "names": {
+        "IR": "Iran",
+        "USA": "United States of America",
+        "AR": "Saudi Arabia"
+      }
+    },
     "sendCode": "Send verification code",
     "phoneRequired": "Please enter your phone number",
     "phoneInvalid": "Invalid phone number",
