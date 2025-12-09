@@ -280,6 +280,18 @@ function editPhone() {
       <!-- Step 2 -->
       <div v-else key="step2" ref="otpContainer" :class="shake ? 'animate-shake' : ''">
 
+        <!-- Username field -->
+        <div class="mb-4">
+          <label class="block text-sm text-gray-700 mb-2">
+            {{ $t("signin.username") }}
+          </label>
+
+          <input
+              type="text"
+              class="block w-3/4 h-11 sm:h-12 mx-auto px-4 rounded-xl border border-gray-300 text-sm sm:text-base transition focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+          />
+        </div>
+
         <label class="block text-sm text-gray-700 mb-2">
           {{ $t("signin.otpLabel") }}
         </label>

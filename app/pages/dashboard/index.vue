@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import {ref, onMounted} from "vue"
 
 const phone = ref<string>("")
 const walletBalance = ref<number>(125000)
@@ -27,7 +27,9 @@ onMounted(fetchInfos)
             {{ $t("dashboard.phone") }}
           </p>
 
-          <p class="text-xl font-semibold text-gray-800">
+          <p
+              dir="ltr"
+              class="text-xl font-semibold text-gray-800">
             {{ phone }}
           </p>
         </div>
@@ -38,7 +40,7 @@ onMounted(fetchInfos)
           </p>
 
           <p class="text-xl font-bold text-green-600">
-            {{ walletBalance }}
+            {{ walletBalance.toLocaleString() }}
             {{ $t("dashboard.currency") }}
           </p>
         </div>

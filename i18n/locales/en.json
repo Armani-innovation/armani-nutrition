@@ -14,6 +14,7 @@
     "sendCode": "Send verification code",
     "phoneRequired": "Please enter your phone number",
     "phoneInvalid": "Invalid phone number",
+    "username" : "Please enter your name",
     "otpLabel": "Enter verification code",
     "otpInvalid": "Incorrect verification code",
     "login": "Login",
