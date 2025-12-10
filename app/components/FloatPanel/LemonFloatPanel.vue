@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "#vue-router"
+import {useCookie} from "#app";
 
 type langs = "fa" | "en" | "ar"
 
@@ -12,9 +13,9 @@ const {setLocale} = useI18n()
 
 // Navbar options
 const options = [
-  {label: $t("navbar.dashboard"), emoji: "🏠"},
+  {label: "Dashboard", emoji: "🏠"},
   {
-    label: $t("navbar.language"),
+    label: "Language",
     emoji: "🌐",
     subOptions: [
       {label: "English", emoji: "🇺🇲", code: "en"},
@@ -22,7 +23,7 @@ const options = [
       {label: "Arabic", emoji: "🇸🇦", code: "ar"}
     ]
   },
-  {label: $t("navbar.logout"), emoji: "🚪"}
+  {label: "LogOut", emoji: "🚪"}
 ]
 
 // Navigate functions
@@ -31,7 +32,14 @@ function navigateToHome() {
 }
 
 function logOut(): void {
+  const access = useCookie('access_token')
+  const refresh = useCookie('refresh_token')
+
+  access.value = null
+  refresh.value = null
+
   sessionStorage.clear()
+
   router.push("/")
 }
 

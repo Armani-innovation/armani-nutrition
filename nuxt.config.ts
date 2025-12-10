@@ -14,7 +14,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     ENCRYPT_KEY: process.env.ENCRYPT_KEY,
-    public: {}
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE
+    }
   },
 
   i18n: {
@@ -35,6 +37,13 @@ export default defineNuxtConfig({
     ],
 
     langDir: 'locales/'
+  },
+  nitro: {
+    routeRules: {
+      '/api/**': {
+        proxy: 'http://85.198.11.236:8000/**'
+      }
+    }
   }
 
 });

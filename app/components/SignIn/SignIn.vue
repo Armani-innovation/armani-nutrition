@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import {ref, nextTick, computed} from 'vue'
-import {navigateTo} from '#app'
+import {navigateTo, useCookie} from '#app'
 import type {Country} from "~/types/SignIn";
+import {useAuthApi} from '~/composables/useAuthApi'
+
+const {sendOtp, verifyOtp, completeProfile} = useAuthApi()
 
 // ----------------------
 // Country Config
@@ -51,6 +54,8 @@ const selectedCountry = ref<Country>(countries[0] || {
 })
 const phone = ref<string>('')
 const phoneError = ref<string>('')
+const isExist = ref<boolean>(false)
+const needsProfile = computed(() => !isExist.value)
 
 // ----------------------
 // State: OTP
@@ -59,6 +64,8 @@ const codeDigits = ref<string[]>(['', '', '', '', ''])
 const otpContainer = ref<HTMLElement | null>(null)
 const shake = ref<boolean>(false)
 const otpError = ref<string>('')
+const firstName = ref<string>('')
+const lastName = ref<string>('')
 
 // ----------------------
 // Computed full phone
@@ -84,10 +91,16 @@ function validatePhone() {
 // ----------------------
 // Go to OTP step
 // ----------------------
-function goToStep2() {
+async function goToStep2() {
   validatePhone()
   if (phoneError.value) return
-  step.value = 2
+  try {
+    const res = await sendOtp({phone: finalPhone.value})
+    isExist.value = res.exists
+    step.value = 2
+  } catch (err) {
+    console.error('Failed to send OTP', err)
+  }
 }
 
 // ----------------------
@@ -103,26 +116,42 @@ function onOtpEnter() {
 // ----------------------
 // OTP verify
 // ----------------------
-function verifyCode() {
+async function verifyCode() {
   const code = codeDigits.value.join('')
 
-  if (code !== '12345') {
+  try {
+    const res = await verifyOtp({
+      phone: finalPhone.value,
+      code
+    })
+
+    sessionStorage.setItem('phone', res.user.phone)
+    otpError.value = ''
+
+    if (needsProfile.value) {
+      step.value = 3
+    } else {
+      navigateTo('/dashboard')
+    }
+
+  } catch (err) {
+    console.error('verifyOtp failed error object:', err)
     otpError.value = $t("signin.otpInvalid")
     shake.value = true
-
-    setTimeout(() => {
-      shake.value = false
-    }, 400)
-
-    return
+    setTimeout(() => { shake.value = false }, 400)
   }
+}
 
-  otpError.value = ''
-
-  console.log("LOGIN:", finalPhone.value)
-
-  sessionStorage.setItem('phone', finalPhone.value)
-  navigateTo('/dashboard')
+async function submitProfile() {
+  try {
+    await completeProfile({
+      first_name: firstName.value,
+      last_name: lastName.value
+    })
+    navigateTo('/dashboard')
+  } catch (err) {
+    console.error('Failed to complete profile', err)
+  }
 }
 
 // ----------------------
@@ -278,19 +307,7 @@ function editPhone() {
       </div>
 
       <!-- Step 2 -->
-      <div v-else key="step2" ref="otpContainer" :class="shake ? 'animate-shake' : ''">
-
-        <!-- Username field -->
-        <div class="mb-4">
-          <label class="block text-sm text-gray-700 mb-2">
-            {{ $t("signin.username") }}
-          </label>
-
-          <input
-              type="text"
-              class="block w-3/4 h-11 sm:h-12 mx-auto px-4 rounded-xl border border-gray-300 text-sm sm:text-base transition focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-          />
-        </div>
+      <div v-else-if="step === 2" key="step2" ref="otpContainer" :class="shake ? 'animate-shake' : ''">
 
         <label class="block text-sm text-gray-700 mb-2">
           {{ $t("signin.otpLabel") }}
@@ -329,6 +346,34 @@ function editPhone() {
         >
           {{ $t("signin.editPhone") }}
         </p>
+      </div>
+
+      <!-- Step 3: Complete Profile -->
+      <div v-else-if="step === 3" key="step3">
+        <label class="block text-sm text-gray-700 mb-2">
+          {{ $t("signin.firstName") }}
+        </label>
+        <input
+            v-model="firstName"
+            type="text"
+            class="block w-full h-11 sm:h-12 px-4 rounded-xl border border-gray-300 text-sm sm:text-base transition focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+        />
+
+        <label class="block text-sm text-gray-700 my-2">
+          {{ $t("signin.lastName") }}
+        </label>
+        <input
+            v-model="lastName"
+            type="text"
+            class="block w-full h-11 sm:h-12 px-4 rounded-xl border border-gray-300 text-sm sm:text-base transition focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+        />
+
+        <button
+            @click="submitProfile"
+            class="w-full mt-4 bg-primary text-white py-3 rounded-xl hover:bg-[#2e5133]"
+        >
+          {{ $t("signin.submitProfile") }}
+        </button>
       </div>
 
     </transition>
