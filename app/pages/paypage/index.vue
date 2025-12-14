@@ -1,17 +1,34 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import {navigateTo} from "#app";
+import {ref, onMounted} from "vue"
 import TickCheck from "~/components/Job Done/TickCheck.vue"
+import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi";
+
+const {getPrice, checkDiscountCode, sendPayPage} = usePayPageApi()
 
 // ===== STATE =====
 const discountCode = ref<string>("")
 const isValid = ref<boolean>(true)
 const discountText = ref<string>("")
 
-const price = ref<number>(180_000)
-const finalPrice = ref<number>(price.value)
+const price = ref<number>(0)
+const finalPrice = ref<number>(0)
 
 // ===== METHODS =====
-const applyDiscount = () => {
+
+async function fetchPrice() {
+  try {
+
+    const fetchedPrice = await getPrice()
+    price.value = fetchedPrice.price
+    finalPrice.value = fetchedPrice.price
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+async function applyDiscount() {
   isValid.value = true
   discountText.value = ""
 
@@ -21,21 +38,28 @@ const applyDiscount = () => {
     return
   }
 
-  // نمونه تست اعتبارسنجی (بعدا به API وصل میشه)
-  if (discountCode.value === "OFF20") {
-    finalPrice.value = price.value * 0.8
+  try {
+    const discountedPrice = await checkDiscountCode(discountCode.value)
+    finalPrice.value = discountedPrice.price
     discountText.value = "paypage.discountApplied"
-  } else {
+  } catch {
     isValid.value = false
     discountText.value = "paypage.invalidDiscount"
-    finalPrice.value = price.value
   }
 }
 
-// ===== UTILS =====
-const formatPrice = (num: number) => {
-  return num.toLocaleString("fa-IR")
+function routeToPayPage() {
+  if (!finalPrice.value) {
+    navigateTo("/result")
+  } else {
+    sendPayPage(finalPrice.value / 10)
+  }
 }
+
+onMounted(() => {
+  fetchPrice()
+})
+
 </script>
 
 <template>
@@ -96,7 +120,7 @@ const formatPrice = (num: number) => {
                 v-if="finalPrice !== price"
                 class="line-through text-sm text-gray-400"
             >
-              {{ formatPrice(price) }}
+              {{ price.toLocaleString() }}
             </span>
 
             <span class="text-xl font-bold text-primary">
@@ -106,12 +130,12 @@ const formatPrice = (num: number) => {
         </div>
 
         <!-- PAY -->
-        <NuxtLink
-            to="/result"
+        <button
+            @click="routeToPayPage"
             class="w-full block text-center bg-primary py-3 rounded-xl font-medium text-white transition hover:opacity-90"
         >
           {{ $t("paypage.payBtn") }}
-        </NuxtLink>
+        </button>
 
       </div>
 

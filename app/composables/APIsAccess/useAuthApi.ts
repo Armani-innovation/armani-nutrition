@@ -69,9 +69,6 @@ export const useAuthApi = () => {
   const { locale } = useI18n()
   const lang = locale.value
 
-  // ✅ دیگه createApiFetch نمی‌خوای!
-  // ✅ apiFetch مستقیم ایمپورت شده و baseURL='/api' داره
-
   const sendOtp = (payload: SendOtpRequest) => {
     return apiFetch<SendOtpResponse>('/users/auth/send-otp/', {
       method: 'POST',

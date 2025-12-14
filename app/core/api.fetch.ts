@@ -16,7 +16,7 @@ export const createApiFetch = (baseURL: string) => {
 
       try {
 
-        await $fetch('/auth/refresh/', {
+        await $fetch('token/refresh/', {
           method: 'POST',
           baseURL,
           credentials: 'include'

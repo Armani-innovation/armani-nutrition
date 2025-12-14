@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {ref, nextTick, computed} from 'vue'
-import {navigateTo, useCookie} from '#app'
+import {navigateTo} from '#app'
 import type {Country} from "~/types/SignIn";
-import {useAuthApi} from '~/composables/useAuthApi'
+import {useAuthApi} from '~/composables/APIsAccess/useAuthApi'
 
 const {sendOtp, verifyOtp, completeProfile} = useAuthApi()
 
@@ -138,7 +138,9 @@ async function verifyCode() {
     console.error('verifyOtp failed error object:', err)
     otpError.value = $t("signin.otpInvalid")
     shake.value = true
-    setTimeout(() => { shake.value = false }, 400)
+    setTimeout(() => {
+      shake.value = false
+    }, 400)
   }
 }
 

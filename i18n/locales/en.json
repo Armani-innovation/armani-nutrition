@@ -19,7 +19,8 @@
     "otpInvalid": "Incorrect verification code",
     "login": "Login",
     "editPhone": "Edit phone number",
-    "terms": "By logging in, you agree to our terms and conditions."
+    "terms": "By logging in, you agree to our terms and conditions.",
+    "submitProfile" : "Sign Up"
   },
   "dashboard": {
     "phone": "Phone Number",

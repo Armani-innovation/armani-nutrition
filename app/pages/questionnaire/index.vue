@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import type {Question, RawQuestion} from "~/types/questionnaire"
+import type {Question, QuestionnaireAnswers, RawQuestion} from "~/types/Questionnaires"
 import rawQuestionsJson from "~/assets/json/questions.json"
 import {navigateTo} from "#app"
+import {useQuestionnaireApi} from "~/composables/APIsAccess/useQuestionnaireApi";
+
+const {getQuestions, createQuestionnaire} = useQuestionnaireApi()
 
 const rawQuestions = rawQuestionsJson as RawQuestion[]
 
@@ -30,31 +33,18 @@ const followUpAnswers = ref<Record<number, any>>({})
 const visibleQuestions = ref<number[]>([])
 const questionRefs = ref<HTMLElement[]>([])
 
-function updateCheckbox(qId: number, option: string) {
-  if (!answers.value[qId]) answers.value[qId] = []
+const errors = ref<Record<number, string>>({})
 
-  const index = answers.value[qId].indexOf(option)
-
-  if (index > -1) {
-    answers.value[qId].splice(index, 1)
-  } else {
-    answers.value[qId].push(option)
+async function fetchQuestions() {
+  try {
+    const questions = await getQuestions()
+    console.log(questions)
+  } catch (error) {
+    console.log(error)
   }
 }
 
-function handleSubmit() {
-  const payload = questions.map(q => ({
-    question: q.question,
-    answer: answers.value[q.id] ?? null,
-    followUp: followUpAnswers.value[q.id] ?? null
-  }))
-
-  console.log("ANSWERS:", payload)
-
-  navigateTo("/paypage")
-}
-
-onMounted(() => {
+function handleScrollAnimation(): void {
   const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -73,6 +63,102 @@ onMounted(() => {
     el.setAttribute("data-id", String(questions[idx]?.id))
     observer.observe(el)
   })
+}
+
+function handleInput(qId: number) {
+  if (errors.value[qId]) {
+    const answer = answers.value[qId]
+    if (
+        answer !== undefined &&
+        answer !== null &&
+        (!(Array.isArray(answer)) || answer.length > 0)
+    ) {
+      delete errors.value[qId]
+    }
+  }
+}
+
+function updateCheckbox(qId: number, option: string) {
+  if (!answers.value[qId]) answers.value[qId] = []
+
+  const index = answers.value[qId].indexOf(option)
+  if (index > -1) {
+    answers.value[qId].splice(index, 1)
+  } else {
+    answers.value[qId].push(option)
+  }
+
+  if (errors.value[qId] && answers.value[qId].length > 0) {
+    delete errors.value[qId]
+  }
+}
+
+function handleRadioInput(qId: number) {
+  if (errors.value[qId] && answers.value[qId] !== undefined && answers.value[qId] !== null) {
+    delete errors.value[qId]
+  }
+}
+
+function handleFollowUpInput(qId: number) {
+  if (errors.value[qId] && followUpAnswers.value[qId]) {
+    delete errors.value[qId]
+  }
+}
+
+function handleSubmit() {
+  errors.value = {}
+
+  let hasError = false
+
+  questions.forEach(q => {
+    if (q.required) {
+      const answer = answers.value[q.id]
+      if (
+          answer === undefined ||
+          answer === null ||
+          (Array.isArray(answer) && answer.length === 0)
+      ) {
+        errors.value[q.id] = "این فیلد اجباری است"
+        hasError = true
+      }
+    }
+  })
+
+  if (hasError) {
+    const firstErrorId = Number(Object.keys(errors.value)[0])
+    const el = questionRefs.value.find(el => Number(el.getAttribute("data-id")) === firstErrorId)
+    if (el) el.scrollIntoView({behavior: "smooth", block: "center"})
+    return
+  }
+
+  const payload = questions.map(q => ({
+    question: q.question,
+    answer: answers.value[q.id] ?? null,
+    followUp: followUpAnswers.value[q.id] ?? null
+  }))
+
+  console.log(payload)
+  getQuestionnaireId()
+
+  navigateTo("/paypage")
+}
+
+async function getQuestionnaireId() {
+
+  try {
+
+    const questionnaire = await createQuestionnaire()
+    console.log(questionnaire)
+
+  } catch (e) {
+    console.log(e)
+  }
+
+}
+
+onMounted(() => {
+  fetchQuestions()
+  handleScrollAnimation()
 })
 </script>
 
@@ -94,8 +180,7 @@ onMounted(() => {
           :class="[
           'transform transition duration-700 ease-out opacity-0 translate-y-4',
           { 'opacity-100 translate-y-0': visibleQuestions.includes(q.id) }
-        ]"
-      >
+        ]">
 
         <label class="block font-medium text-gray-800 mb-1 text-sm sm:text-base">
           {{ $t(q.question) }}
@@ -106,10 +191,11 @@ onMounted(() => {
         <input
             v-if="q.type === 'text' || q.type === 'number'"
             v-model="answers[q.id]"
+            @input="handleInput(q.id)"
             :type="q.type === 'number' ? 'number' : 'text'"
             :placeholder="q.placeholder ? $t(q.placeholder) : ''"
             class="w-[99%] p-2 sm:p-3 border border-gray-300 rounded-md
-         text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary"
+            text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary"
         />
 
         <!-- MULTIPLE CHOICE -->
@@ -121,7 +207,7 @@ onMounted(() => {
               v-for="(option, index) in q.options"
               :key="index"
               class="flex items-center space-x-2 bg-gray-100 px-2 sm:px-3 py-1 rounded-md
-                   cursor-pointer transition hover:bg-[#e6f0e6] text-sm sm:text-base"
+           cursor-pointer transition hover:bg-[#e6f0e6] text-sm sm:text-base"
           >
 
             <input
@@ -139,12 +225,19 @@ onMounted(() => {
                 :value="option"
                 v-model="answers[q.id]"
                 class="w-4 h-4 accent-primary"
+                @change="handleRadioInput(q.id)"
             />
 
             <span>{{ $t(option) }}</span>
 
           </label>
         </div>
+
+        <!-- خطای سوال -->
+        <div v-if="errors[q.id]" class="text-red-500 text-sm mt-1">
+          {{ errors[q.id] }}
+        </div>
+
 
         <!-- FOLLOW UP -->
         <transition name="fade-slide" mode="out-in">
@@ -154,6 +247,7 @@ onMounted(() => {
           >
             <input
                 v-model="followUpAnswers[q.id]"
+                @input="handleFollowUpInput(q.id)"
                 :type="q.followUp.type === 'number' ? 'number' : 'text'"
                 :placeholder="q.followUp.placeholder ? $t(q.followUp.placeholder) : ''"
                 class="w-full p-2 sm:p-3 border border-gray-300 rounded-md

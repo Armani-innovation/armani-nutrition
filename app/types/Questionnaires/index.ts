@@ -28,15 +28,15 @@
 //   } | null;
 // }
 
-export type QuestionType = "text" | "number" | "multiple-choice"
+type QuestionType = "text" | "number" | "multiple-choice"
 
-export interface FollowUp {
+interface FollowUp {
   if: string
   type: QuestionType
   placeholder: string | null
 }
 
-export interface Question {
+interface Question {
   id: number
   question: string         // کلید i18n یا متن سؤال
   type: QuestionType
@@ -47,7 +47,7 @@ export interface Question {
   followUp: FollowUp | null
 }
 
-export interface RawQuestion {
+interface RawQuestion {
   id: number
   questionKey: string
   type: "text" | "number" | "multiple-choice"
@@ -61,3 +61,19 @@ export interface RawQuestion {
     placeholderKey: string | null
   } | null
 }
+
+interface QuestionnaireAnswers {
+  question: string
+  answer: string | number | string[]
+  followUp: string | null
+}
+
+interface CreateQuestionnaireResponse {
+  id: number
+  user: number
+  created_at: string
+  is_paid: boolean
+  is_reported: boolean
+}
+
+export type {Question, RawQuestion, QuestionnaireAnswers, CreateQuestionnaireResponse}
