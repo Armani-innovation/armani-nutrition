@@ -5,10 +5,9 @@ import rawQuestionsJson from "~/assets/json/questions.json"
 import {navigateTo} from "#app"
 import {useQuestionnaireApi} from "~/composables/APIsAccess/useQuestionnaireApi";
 
-const {postQuestions, createQuestionnaire} = useQuestionnaireApi()
+const {createQuestionnaire} = useQuestionnaireApi()
 
 const rawQuestions = rawQuestionsJson as RawQuestion[]
-// let rawQuestions = reactive<RawQuestion[]>([])
 
 const questions = computed<Question[]>(() =>
     rawQuestions.map(q => ({
@@ -37,19 +36,6 @@ const visibleQuestions = ref<number[]>([])
 const questionRefs = ref<HTMLElement[]>([])
 
 const errors = ref<Record<number, string>>({})
-
-// async function fetchQuestions() {
-//   try {
-//     const fetchedQuestions = await getQuestions()
-//     console.log(rawQuestions)
-//     console.log(fetchedQuestions)
-//     rawQuestions.splice(0, rawQuestions.length, ...fetchedQuestions)
-//     console.log(rawQuestions)
-//     console.log(questions.value)
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
 
 function handleScrollAnimation(): void {
   const observer = new IntersectionObserver(
@@ -187,15 +173,6 @@ async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
     console.log(e)
   }
 
-  // try {
-  //
-  //   const res = await postQuestions(payload, questionnaireID.value)
-  //   console.log(res)
-  //
-  // } catch (error) {
-  //   console.log(error)
-  // }
-
   sessionStorage.setItem("questionnaireID", `${questionnaireID.value}`)
   console.log(sessionStorage.getItem("questionnaireID"))
 
@@ -203,19 +180,7 @@ async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
 
 }
 
-// watch(
-//     questions,
-//     async (newVal) => {
-//       if (newVal.length) {
-//         await nextTick()
-//         handleScrollAnimation()
-//       }
-//     },
-//     { immediate: false }
-// )
-
 onMounted(() => {
-  // fetchQuestions()
   handleScrollAnimation()
 })
 </script>

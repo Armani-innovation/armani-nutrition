@@ -15,5 +15,16 @@ export const useReportApi = () => {
     })
   }
 
-  return {startReport}
+  const checkReport = (questionnaireID:string) => {
+    return apiFetch(`/reports/status/${questionnaireID}/`, {
+      method: 'GET',
+      credentials: 'include',
+      async onRequest({options}) {
+        options.headers.set('Accept-Language', lang)
+      }
+    })
+
+  }
+
+  return {startReport, checkReport}
 }

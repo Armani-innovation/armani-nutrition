@@ -12,7 +12,7 @@ const isValid = ref<boolean>(true)
 const discountText = ref<string>("")
 
 const price = ref<number>(0)
-const finalPrice = ref<number>(0)
+const finalPrice = ref<number>(1000000)
 
 // ===== METHODS =====
 
