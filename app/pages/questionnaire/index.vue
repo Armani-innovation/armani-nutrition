@@ -5,26 +5,29 @@ import rawQuestionsJson from "~/assets/json/questions.json"
 import {navigateTo} from "#app"
 import {useQuestionnaireApi} from "~/composables/APIsAccess/useQuestionnaireApi";
 
-const {getQuestions, createQuestionnaire} = useQuestionnaireApi()
+const {postQuestions, createQuestionnaire} = useQuestionnaireApi()
 
 const rawQuestions = rawQuestionsJson as RawQuestion[]
+// let rawQuestions = reactive<RawQuestion[]>([])
 
-const questions: Question[] = rawQuestions.map(q => ({
-  id: q.id,
-  question: q.questionKey,
-  type: q.type,
-  required: q.required,
-  options: q.optionsKeys,
-  multipleSelect: q.multipleSelect,
-  placeholder: q.placeholderKey,
-  followUp: q.followUp
-      ? {
-        if: q.followUp.ifKey,
-        type: q.followUp.type,
-        placeholder: q.followUp.placeholderKey,
-      }
-      : null,
-}))
+const questions = computed<Question[]>(() =>
+    rawQuestions.map(q => ({
+      id: q.id,
+      question: q.questionKey,
+      type: q.type,
+      required: q.required,
+      options: q.optionsKeys,
+      multipleSelect: q.multipleSelect,
+      placeholder: q.placeholderKey,
+      followUp: q.followUp
+          ? {
+            if: q.followUp.ifKey,
+            type: q.followUp.type,
+            placeholder: q.followUp.placeholderKey,
+          }
+          : null,
+    }))
+)
 
 const answers = ref<Record<number, any>>({})
 const followUpAnswers = ref<Record<number, any>>({})
@@ -35,14 +38,18 @@ const questionRefs = ref<HTMLElement[]>([])
 
 const errors = ref<Record<number, string>>({})
 
-async function fetchQuestions() {
-  try {
-    const questions = await getQuestions()
-    console.log(questions)
-  } catch (error) {
-    console.log(error)
-  }
-}
+// async function fetchQuestions() {
+//   try {
+//     const fetchedQuestions = await getQuestions()
+//     console.log(rawQuestions)
+//     console.log(fetchedQuestions)
+//     rawQuestions.splice(0, rawQuestions.length, ...fetchedQuestions)
+//     console.log(rawQuestions)
+//     console.log(questions.value)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 function handleScrollAnimation(): void {
   const observer = new IntersectionObserver(
@@ -60,7 +67,7 @@ function handleScrollAnimation(): void {
   )
 
   questionRefs.value.forEach((el, idx) => {
-    el.setAttribute("data-id", String(questions[idx]?.id))
+    el.setAttribute("data-id", String(questions.value[idx]?.id))
     observer.observe(el)
   })
 }
@@ -110,7 +117,7 @@ function handleSubmit() {
 
   let hasError = false
 
-  questions.forEach(q => {
+  questions.value.forEach(q => {
     if (q.required) {
       const answer = answers.value[q.id]
       if (
@@ -131,33 +138,84 @@ function handleSubmit() {
     return
   }
 
-  const payload = questions.map(q => ({
-    question: q.question,
-    answer: answers.value[q.id] ?? null,
-    followUp: followUpAnswers.value[q.id] ?? null
-  }))
+  const payload = questions.value.map(q => {
+    const value = answers.value[q.id]
+    const followUpValue = followUpAnswers.value[q.id]
+    const hasActiveFollowUp =
+        q.followUp && value === q.followUp.if
 
-  console.log(payload)
-  getQuestionnaireId()
+    return {
+      question: $t(q.question),
 
-  navigateTo("/paypage")
+      text_answer:
+          hasActiveFollowUp
+              ? followUpValue ?? null
+              : q.type === "text" || q.type === "number"
+                  ? value ?? null
+                  : null,
+
+      option:
+          q.type === "multiple-choice"
+              ? hasActiveFollowUp
+                  ? null
+                  : q.multipleSelect
+                      ? value?.map((opt: string) => $t(opt)) ?? null
+                      : value
+                          ? [$t(value)]
+                          : null
+              : null
+    }
+  })
+
+  getQuestionnaireId(payload)
+
 }
 
-async function getQuestionnaireId() {
+async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
+
+  console.log(payload)
+
+  const questionnaireID = ref<number>(0)
 
   try {
 
-    const questionnaire = await createQuestionnaire()
+    const questionnaire = await createQuestionnaire(payload)
+    questionnaireID.value = questionnaire.id
     console.log(questionnaire)
 
   } catch (e) {
     console.log(e)
   }
 
+  // try {
+  //
+  //   const res = await postQuestions(payload, questionnaireID.value)
+  //   console.log(res)
+  //
+  // } catch (error) {
+  //   console.log(error)
+  // }
+
+  sessionStorage.setItem("questionnaireID", `${questionnaireID.value}`)
+  console.log(sessionStorage.getItem("questionnaireID"))
+
+  navigateTo("/paypage")
+
 }
 
+// watch(
+//     questions,
+//     async (newVal) => {
+//       if (newVal.length) {
+//         await nextTick()
+//         handleScrollAnimation()
+//       }
+//     },
+//     { immediate: false }
+// )
+
 onMounted(() => {
-  fetchQuestions()
+  // fetchQuestions()
   handleScrollAnimation()
 })
 </script>

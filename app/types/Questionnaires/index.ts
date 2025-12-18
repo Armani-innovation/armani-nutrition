@@ -1,33 +1,3 @@
-// export interface Question {
-//   id: number;
-//   question: string;
-//   type: "text" | "number" | "multiple-choice";
-//   required: boolean;
-//   options: string[];
-//   multipleSelect: boolean;
-//   placeholder: string | null;
-//   followUp: {
-//     if: string;
-//     type: "text" | "number" | "multiple-choice";
-//     placeholder: string | null;
-//   } | null;
-// }
-
-// export interface RawQuestion {
-//   id: number;
-//   questionKey: string;
-//   type: "text" | "number" | "multiple-choice";
-//   required: boolean;
-//   optionsKeys: string[];
-//   multipleSelect: boolean;
-//   placeholderKey: string | null;
-//   followUp: {
-//     ifKey: string;
-//     type: "text" | "number" | "multiple-choice";
-//     placeholderKey: string | null;
-//   } | null;
-// }
-
 type QuestionType = "text" | "number" | "multiple-choice"
 
 interface FollowUp {
@@ -38,10 +8,10 @@ interface FollowUp {
 
 interface Question {
   id: number
-  question: string         // کلید i18n یا متن سؤال
+  question: string
   type: QuestionType
   required: boolean
-  options: string[]        // کلید i18n یا متن گزینه‌ها
+  options: string[]
   multipleSelect: boolean
   placeholder: string | null
   followUp: FollowUp | null
@@ -64,8 +34,8 @@ interface RawQuestion {
 
 interface QuestionnaireAnswers {
   question: string
-  answer: string | number | string[]
-  followUp: string | null
+  text_answer: string | number | null
+  option: string[] | null
 }
 
 interface CreateQuestionnaireResponse {

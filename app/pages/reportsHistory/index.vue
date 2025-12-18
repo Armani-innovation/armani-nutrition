@@ -1,20 +1,43 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import {computed, onMounted, reactive} from "vue"
+import {useDashboardApi} from "~/composables/APIsAccess/useDashboardApi";
+import type {reportsHistory} from "~/types/History";
 
-const phone = "09123456789"
+const {getReports} = useDashboardApi();
 
-const reports = [
-  { date: "1403/11/01", time: "14:20", payment: "paid", status: "done" },
-  { date: "1403/10/28", time: "10:55", payment: "unpaid", status: "pending" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" },
-  { date: "1403/10/20", time: "19:40", payment: "paid", status: "done" }
-]
+const phone = sessionStorage.getItem("phone")
+
+// const reports = [
+//   {date: "1403/11/01", time: "14:20", payment: "paid", status: "done"},
+//   {date: "1403/10/28", time: "10:55", payment: "unpaid", status: "pending"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
+//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"}
+// ]
+
+let reports = reactive<reportsHistory[]>([])
 
 const reportCount = computed(() => reports.length)
+
+async function fetchReports() {
+
+  try {
+    const history: reportsHistory[] = await getReports()
+    reports = [...history]
+    console.log(history)
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+onMounted(() => {
+  fetchReports()
+})
+
 </script>
 
 <template>
@@ -39,7 +62,7 @@ const reportCount = computed(() => reports.length)
           <p class="text-sm">
             {{ $t("reports.phone") }}
           </p>
-          <p class="text-lg font-semibold">
+          <p dir="ltr" class="w-max text-lg font-semibold">
             {{ phone }}
           </p>
         </div>
@@ -80,22 +103,21 @@ const reportCount = computed(() => reports.length)
               class="border-b hover:bg-gray-50 transition"
           >
 
-            <td class="p-4">{{ item.date }}</td>
-            <td class="p-4">{{ item.time }}</td>
+            <td class="p-4">{{ item.created_at }}</td>
 
             <td class="p-4">
                 <span
-                    :class="item.payment === 'paid' ? 'text-green-600' : 'text-red-600'"
+                    :class="item.is_paid ? 'text-green-600' : 'text-red-600'"
                 >
-                  {{ $t(`reports.payment.${item.payment}`) }}
+                  {{ $t(`reports.payment.${item.is_paid}`) }}
                 </span>
             </td>
 
             <td class="p-4">
                 <span
-                    :class="item.status === 'done' ? 'text-primary' : 'text-gray-500'"
+                    :class="item.is_reported ? 'text-primary' : 'text-gray-500'"
                 >
-                  {{ $t(`reports.status.${item.status}`) }}
+                  {{ $t(`reports.status.${item.is_reported}`) }}
                 </span>
             </td>
 
@@ -120,7 +142,7 @@ const reportCount = computed(() => reports.length)
             {{ $t("reports.table.date") }}
           </span>
           <span class="font-semibold text-gray-900">
-            {{ item.date }}
+            {{ item.created_at }}
           </span>
         </div>
 
@@ -129,7 +151,7 @@ const reportCount = computed(() => reports.length)
             {{ $t("reports.table.time") }}
           </span>
           <span class="font-semibold text-gray-900">
-            {{ item.time }}
+            {{ item.created_at }}
           </span>
         </div>
 
@@ -139,10 +161,10 @@ const reportCount = computed(() => reports.length)
           </span>
 
           <span
-              :class="item.payment === 'paid' ? 'text-green-600' : 'text-red-600'"
+              :class="item.is_paid ? 'text-green-600' : 'text-red-600'"
               class="font-semibold"
           >
-            {{ $t(`reports.payment.${item.payment}`) }}
+            {{ $t(`reports.payment.${item.is_paid}`) }}
           </span>
         </div>
 
@@ -152,10 +174,10 @@ const reportCount = computed(() => reports.length)
           </span>
 
           <span
-              :class="item.status === 'done' ? 'text-primary' : 'text-gray-500'"
+              :class="item.is_reported ? 'text-primary' : 'text-gray-500'"
               class="font-semibold"
           >
-            {{ $t(`reports.status.${item.status}`) }}
+            {{ $t(`reports.status.${item.is_reported}`) }}
           </span>
         </div>
 
@@ -173,19 +195,45 @@ const reportCount = computed(() => reports.length)
 
 /* Animations */
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.animate-fade-in { animation: fade-in .5s ease-out forwards; }
-.animate-slide-up { animation: slide-up .6s ease-out forwards; }
-.animate-scale-in { animation: scale-in .4s ease-out forwards; }
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in .5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up .6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in .4s ease-out forwards;
+}
 </style>
