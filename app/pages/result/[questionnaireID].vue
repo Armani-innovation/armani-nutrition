@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref, reactive, onMounted} from 'vue'
+import {ref, reactive, onMounted, nextTick} from 'vue'
 import {useReportApi} from "~/composables/APIsAccess/useReportApi";
 import {useRoute} from "#vue-router";
 import {useEncrypt} from "~/composables/useEncrypt";
@@ -200,6 +200,11 @@ async function reportChecker() {
   }
 }
 
+const printReport = async () => {
+  await nextTick()
+  window.print()
+}
+
 onMounted(() => {
   fetchQuestionnaireID()
 })
@@ -214,7 +219,7 @@ onMounted(() => {
         @finished="onTimerFinished"
     />
 
-    <div v-if="reportReady" class="max-h-[75vh] p-6 rounded-xl shadow-lg bg-white w-full text-center overflow-y-auto">
+    <div v-if="reportReady" class="page-break max-h-[75vh] p-6 rounded-xl shadow-lg bg-white w-full text-center overflow-y-auto">
 
       <div class="w-[90%] mt-10 mx-auto flex justify-between">
         <div class="inline-block w-[15%]">
@@ -258,6 +263,183 @@ onMounted(() => {
         <br/>
       </p>
     </div>
+    <button
+        v-if="reportReady"
+        @click="printReport"
+        class="px-4 py-1 bg-primary text-white rounded-lg transition print:hidden cursor-pointer"
+    >
+      دانلود PDF
+    </button>
   </div>
 </template>
 
+<style scoped>
+@media print {
+  * {
+    box-shadow: none;
+  }
+  .page-break {
+    page-break-before: always ;
+    width: 100vw;
+  }
+}
+</style>
+
+<!--<template>-->
+<!--  <div class="flex flex-col items-center justify-center gap-6">-->
+
+<!--    &lt;!&ndash; Timer (NOT printed) &ndash;&gt;-->
+<!--    <Timer-->
+<!--        v-if="!reportReady"-->
+<!--        :duration="1200"-->
+<!--        :show="!reportReady"-->
+<!--        @finished="onTimerFinished"-->
+<!--        class="print:hidden"-->
+<!--    />-->
+
+<!--    &lt;!&ndash; Download PDF Button &ndash;&gt;-->
+<!--    <button-->
+<!--        v-if="reportReady"-->
+<!--        @click="printReport"-->
+<!--        class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition print:hidden"-->
+<!--    >-->
+<!--      Download PDF-->
+<!--    </button>-->
+
+<!--    &lt;!&ndash; REPORT (Printable Area) &ndash;&gt;-->
+<!--    <div-->
+<!--        v-if="reportReady"-->
+<!--        ref="reportRef"-->
+<!--        class="print-area page-break p-6 bg-white w-full text-center"-->
+<!--    >-->
+
+<!--      &lt;!&ndash; Logos &ndash;&gt;-->
+<!--      <div class="w-[90%] mt-10 mx-auto flex justify-between">-->
+<!--        <div class="inline-block w-[15%]">-->
+<!--          <img src="~/assets/images/Armani.png" alt="Armani" />-->
+<!--        </div>-->
+<!--        <div class="inline-block w-[15%]">-->
+<!--          <img src="~/assets/images/GoldMedal.png" alt="Gold Medal" />-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; First Part &ndash;&gt;-->
+<!--      <div class="w-[95%] mx-auto mt-5 relative">-->
+<!--        <p class="text-justify leading-relaxed whitespace-pre-line">-->
+<!--          {{ firstPartMessage }}-->
+<!--        </p>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Second Part &ndash;&gt;-->
+<!--      <div class="mt-20">-->
+<!--        <div-->
+<!--            class="text-black w-[90%] mx-auto box-border"-->
+<!--            v-for="(message, index) in secondPartMessage"-->
+<!--            :key="index"-->
+<!--        >-->
+<!--          <p-->
+<!--              class="text-justify whitespace-pre-line"-->
+<!--              v-html="renderCombinedContent(message)"-->
+<!--          ></p>-->
+<!--        </div>-->
+
+<!--        <div class="text-black w-[90%] mx-auto box-border mb-10">-->
+<!--          <p class="text-justify whitespace-pre-line">-->
+<!--            {{ message?.[1] }}-->
+<!--          </p>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Footer &ndash;&gt;-->
+<!--      <p class="text-center mt-10">-->
+<!--        {{ $t("contactHint") }}-->
+<!--        <br />-->
+<!--        <a href="tel:+982332300357">023-32300357</a>-->
+<!--        /-->
+<!--        <a href="tel:+989046504331">09046504331</a>-->
+<!--      </p>-->
+
+<!--    </div>-->
+<!--  </div>-->
+<!--</template>-->
+
+<!--<script setup lang="ts">-->
+<!--import { ref, nextTick } from 'vue'-->
+
+<!--const reportReady = ref(false)-->
+<!--const reportRef = ref<HTMLElement | null>(null)-->
+
+<!--// Example placeholders-->
+<!--const firstPartMessage = ref('')-->
+<!--const secondPartMessage = ref<any[]>([])-->
+<!--const message = ref<any[]>([])-->
+
+<!--const onTimerFinished = () => {-->
+<!--  reportReady.value = true-->
+<!--}-->
+
+<!--const renderCombinedContent = (msg: any) => {-->
+<!--  return msg-->
+<!--}-->
+
+<!--const printReport = async () => {-->
+<!--  await nextTick()-->
+<!--  window.print()-->
+<!--}-->
+<!--</script>-->
+
+<!--<style>-->
+<!--/* =========================-->
+<!--   PRINT STYLES (GLOBAL)-->
+<!--   ========================= */-->
+<!--@media print {-->
+
+<!--  @page {-->
+<!--    size: A4;-->
+<!--    margin: 20mm;-->
+<!--  }-->
+
+<!--  body {-->
+<!--    background: white !important;-->
+<!--  }-->
+
+<!--  /* Hide everything */-->
+<!--  body * {-->
+<!--    visibility: hidden;-->
+<!--  }-->
+
+<!--  /* Show only printable area */-->
+<!--  .print-area,-->
+<!--  .print-area * {-->
+<!--    visibility: visible;-->
+<!--  }-->
+
+<!--  .print-area {-->
+<!--    position: absolute;-->
+<!--    inset: 0;-->
+<!--    width: 100%;-->
+<!--  }-->
+
+<!--  /* Page breaks */-->
+<!--  .page-break {-->
+<!--    page-break-before: always;-->
+<!--  }-->
+
+<!--  /* Fix Tailwind issues */-->
+<!--  .shadow-lg {-->
+<!--    box-shadow: none !important;-->
+<!--  }-->
+
+<!--  .rounded-xl {-->
+<!--    border-radius: 0 !important;-->
+<!--  }-->
+
+<!--  .overflow-y-auto {-->
+<!--    overflow: visible !important;-->
+<!--  }-->
+
+<!--  .max-h-\[75vh\] {-->
+<!--    max-height: none !important;-->
+<!--  }-->
+<!--}-->
+<!--</style>-->
