@@ -3,8 +3,11 @@ import {navigateTo} from "#app";
 import {ref, onMounted} from "vue"
 import TickCheck from "~/components/Job Done/TickCheck.vue"
 import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi";
+import {useRoute} from "#vue-router";
 
 const {getPrice, checkDiscountCode, sendPayPage} = usePayPageApi()
+
+const route = useRoute()
 
 // ===== STATE =====
 const discountCode = ref<string>("")
@@ -50,7 +53,7 @@ async function applyDiscount() {
 
 function routeToPayPage() {
   if (!finalPrice.value) {
-    navigateTo("/result")
+    navigateTo(`/result/${route.fullPath.toString().split('/').slice(2).join('/')}`)
   } else {
     sendPayPage(finalPrice.value / 10)
   }

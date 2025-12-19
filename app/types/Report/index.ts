@@ -5,7 +5,7 @@ interface ReportTaskResponse {
     questionnaire: number;
     status: 'processing' | 'finished' | 'failed';
     task_id: string;
-    created_at: string; // ISO date string
+    created_at: string;
     finish: string | null;
     result: unknown | null;
   };

@@ -23,12 +23,7 @@ export default defineNuxtConfig({
     strategy: 'no_prefix',
     defaultLocale: 'fa',
 
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      alwaysRedirect: false,
-      fallbackLocale: 'fa'
-    },
+    detectBrowserLanguage: false ,
 
     locales: [
       {code: 'fa', name: 'Persian', file: 'fa.json'},
@@ -41,7 +36,7 @@ export default defineNuxtConfig({
   nitro: {
     routeRules: {
       '/api/**': {
-        proxy: `http://127.0.0.1:8000/**`
+        proxy: `http://85.198.11.236:9005/**`
       }
     }
   }

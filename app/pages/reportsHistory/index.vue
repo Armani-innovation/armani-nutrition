@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from "vue"
+import {computed, onMounted, reactive} from "vue"
 import {useDashboardApi} from "~/composables/APIsAccess/useDashboardApi";
+import {useEncrypt} from "~/composables/useEncrypt";
 import type {reportsHistory} from "~/types/History";
+import {navigateTo} from "#app";
 
 const {getReports} = useDashboardApi();
+const {encrypt} = useEncrypt()
 
 const phone: string = sessionStorage.getItem("phone") || ""
 
@@ -26,6 +29,12 @@ async function fetchReports() {
 
   }
 
+}
+
+function handleReport(report: reportsHistory) {
+  if (report.is_reported) {
+    navigateTo(`/result/${encrypt(report.id.toString())}`)
+  }
 }
 
 onMounted(() => {
@@ -94,7 +103,8 @@ onMounted(() => {
           <tr
               v-for="(item, index) in reports"
               :key="index"
-              class="border-b hover:bg-gray-50 transition"
+              class="border-b hover:bg-gray-50 transition cursor-pointer"
+              @click="handleReport(item)"
           >
 
             <td class="p-4">{{ item.created_at.toString().split('T')[0] }}</td>

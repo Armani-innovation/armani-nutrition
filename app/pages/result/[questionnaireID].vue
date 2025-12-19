@@ -1,8 +1,14 @@
 <script lang="ts" setup>
 import {ref, reactive, onMounted} from 'vue'
 import {useReportApi} from "~/composables/APIsAccess/useReportApi";
+import {useRoute} from "#vue-router";
+import {useEncrypt} from "~/composables/useEncrypt";
 
 const {startReport, checkReport} = useReportApi();
+const {decrypt} = useEncrypt()
+
+const route = useRoute()
+const questionnaireID = ref<string>("")
 
 let interval: ReturnType<typeof setInterval>
 
@@ -154,9 +160,14 @@ function isFetchError(error: unknown): error is { status: number } {
   return typeof error === 'object' && error !== null && 'status' in error
 }
 
+function fetchQuestionnaireID() {
+  questionnaireID.value = decrypt(route.params.questionnaireID as string);
+  startQuestionnaire()
+}
+
 async function startQuestionnaire() {
   try {
-    await startReport(sessionStorage.getItem("questionnaireID") || "");
+    await startReport(questionnaireID.value);
 
     await reportChecker()
     interval = setInterval(() => {
@@ -170,13 +181,11 @@ async function startQuestionnaire() {
 
 async function reportChecker() {
   try {
-    const report = await checkReport(sessionStorage.getItem("questionnaireID") || "")
+    const report = await checkReport(questionnaireID.value)
 
     if (report.status === 'done') {
 
-      console.log(report)
       finalMessage.value = report.result.prompts[0].response
-      console.log(finalMessage.value)
       await processMessage();
       markReportReady()
       clearInterval(interval)
@@ -192,7 +201,7 @@ async function reportChecker() {
 }
 
 onMounted(() => {
-  startQuestionnaire()
+  fetchQuestionnaireID()
 })
 </script>
 

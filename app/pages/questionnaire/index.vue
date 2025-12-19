@@ -4,8 +4,10 @@ import type {Question, QuestionnaireAnswers, RawQuestion} from "~/types/Question
 import rawQuestionsJson from "~/assets/json/questions.json"
 import {navigateTo} from "#app"
 import {useQuestionnaireApi} from "~/composables/APIsAccess/useQuestionnaireApi";
+import {useEncrypt} from "~/composables/useEncrypt";
 
 const {createQuestionnaire} = useQuestionnaireApi()
+const {encrypt} = useEncrypt()
 
 const rawQuestions = rawQuestionsJson as RawQuestion[]
 
@@ -159,8 +161,6 @@ function handleSubmit() {
 
 async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
 
-  console.log(payload)
-
   const questionnaireID = ref<number>(0)
 
   try {
@@ -172,10 +172,9 @@ async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
     console.log(e)
   }
 
-  sessionStorage.setItem("questionnaireID", `${questionnaireID.value}`)
-  console.log(sessionStorage.getItem("questionnaireID"))
+  // sessionStorage.setItem("questionnaireID", `${questionnaireID.value}`)
 
-  navigateTo("/paypage")
+  navigateTo(`/paypage/${encrypt(questionnaireID.value.toString())}`)
 
 }
 

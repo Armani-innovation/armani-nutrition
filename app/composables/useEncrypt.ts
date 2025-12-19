@@ -6,13 +6,15 @@ export function useEncrypt() {
   const SECRET_KEY = config.ENCRYPT_KEY ?? 'fallback-key'
 
   const encrypt = (value: string): string => {
-    if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined')
-    return CryptoJS.AES.encrypt(value, SECRET_KEY).toString()
+    return encodeURIComponent(
+      CryptoJS.AES.encrypt(value, SECRET_KEY).toString()
+    )
   }
 
+
   const decrypt = (encrypted: string): string => {
-    if (!SECRET_KEY) throw new Error('SECRET_KEY is not defined')
-    const bytes = CryptoJS.AES.decrypt(encrypted, SECRET_KEY)
+    const decoded = decodeURIComponent(encrypted)
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY)
     return bytes.toString(CryptoJS.enc.Utf8)
   }
 
