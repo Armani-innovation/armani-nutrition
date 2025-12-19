@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 
 interface Props {
-  duration: number   // مدت زمان تایمر به ثانیه
-  show: boolean      // کنترل نمایش تایمر
+  duration: number
+  show: boolean
 }
 
 const props = defineProps<Props>()
@@ -29,7 +29,6 @@ onMounted(() => {
   }, 1000)
 })
 
-// اگر مقدار show از بیرون تغییر کرد، نمایش تایمر کنترل شود
 watch(() => props.show, (newVal) => {
   visible.value = newVal
 })
@@ -46,4 +45,3 @@ watch(() => props.show, (newVal) => {
     </div>
   </div>
 </template>
-

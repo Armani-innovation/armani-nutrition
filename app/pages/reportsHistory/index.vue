@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive} from "vue"
+import {computed, onMounted, reactive, ref} from "vue"
 import {useDashboardApi} from "~/composables/APIsAccess/useDashboardApi";
 import type {reportsHistory} from "~/types/History";
 
 const {getReports} = useDashboardApi();
 
-const phone = sessionStorage.getItem("phone")
-
-// const reports = [
-//   {date: "1403/11/01", time: "14:20", payment: "paid", status: "done"},
-//   {date: "1403/10/28", time: "10:55", payment: "unpaid", status: "pending"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"},
-//   {date: "1403/10/20", time: "19:40", payment: "paid", status: "done"}
-// ]
+const phone: string = sessionStorage.getItem("phone") || ""
 
 let reports = reactive<reportsHistory[]>([])
 
@@ -24,12 +13,17 @@ const reportCount = computed(() => reports.length)
 
 async function fetchReports() {
 
+  let history = reactive<reportsHistory[]>([])
+
   try {
-    const history: reportsHistory[] = await getReports()
-    reports = [...history]
-    console.log(history)
+
+    history = await getReports()
+    reports.splice(0, reports.length, ...history)
+
   } catch (error) {
+
     console.log(error)
+
   }
 
 }
@@ -103,11 +97,12 @@ onMounted(() => {
               class="border-b hover:bg-gray-50 transition"
           >
 
-            <td class="p-4">{{ item.created_at }}</td>
+            <td class="p-4">{{ item.created_at.toString().split('T')[0] }}</td>
+            <td class="p-4">{{ item.created_at.toString().split('T')[1]?.toString().split('.')[0] }}</td>
 
             <td class="p-4">
                 <span
-                    :class="item.is_paid ? 'text-green-600' : 'text-red-600'"
+                    :class="item.is_paid ? 'text-primary' : 'text-red-600'"
                 >
                   {{ $t(`reports.payment.${item.is_paid}`) }}
                 </span>
@@ -115,7 +110,7 @@ onMounted(() => {
 
             <td class="p-4">
                 <span
-                    :class="item.is_reported ? 'text-primary' : 'text-gray-500'"
+                    :class="item.is_reported ? 'text-green-600' : 'text-gray-500'"
                 >
                   {{ $t(`reports.status.${item.is_reported}`) }}
                 </span>
@@ -142,7 +137,7 @@ onMounted(() => {
             {{ $t("reports.table.date") }}
           </span>
           <span class="font-semibold text-gray-900">
-            {{ item.created_at }}
+            {{ item.created_at.toString().split('T')[0] }}
           </span>
         </div>
 
@@ -151,7 +146,7 @@ onMounted(() => {
             {{ $t("reports.table.time") }}
           </span>
           <span class="font-semibold text-gray-900">
-            {{ item.created_at }}
+            {{ item.created_at.toString().split('T')[1]?.toString().split('.')[0] }}
           </span>
         </div>
 
@@ -161,7 +156,7 @@ onMounted(() => {
           </span>
 
           <span
-              :class="item.is_paid ? 'text-green-600' : 'text-red-600'"
+              :class="item.is_paid ? 'text-primary' : 'text-red-600'"
               class="font-semibold"
           >
             {{ $t(`reports.payment.${item.is_paid}`) }}
@@ -174,7 +169,7 @@ onMounted(() => {
           </span>
 
           <span
-              :class="item.is_reported ? 'text-primary' : 'text-gray-500'"
+              :class="item.is_reported ? 'text-green-600' : 'text-gray-500'"
               class="font-semibold"
           >
             {{ $t(`reports.status.${item.is_reported}`) }}

@@ -53,9 +53,62 @@
 //   return { sendOtp, verifyOtp, completeProfile }
 // }
 
+//
+// import { apiFetch } from '~/core/api.fetch'
+// import { useI18n } from 'vue-i18n'
+// import type {
+//   CompleteProfileRequest,
+//   CompleteProfileResponse,
+//   SendOtpRequest,
+//   SendOtpResponse,
+//   VerifyOtpRequest,
+//   VerifyOtpResponse
+// } from '~/types/SignIn'
+//
+// export const useAuthApi = () => {
+//   const { locale } = useI18n()
+//   const lang = locale.value
+//
+//   const sendOtp = (payload: SendOtpRequest) => {
+//     return apiFetch<SendOtpResponse>('/users/auth/send-otp/', {
+//       method: 'POST',
+//       body: payload,
+//       credentials: 'include',
+//       async onRequest({ options }) {
+//         options.headers.set('Accept-Language', lang)
+//       }
+//     })
+//   }
+//
+//   const verifyOtp = (payload: VerifyOtpRequest) => {
+//     return apiFetch<VerifyOtpResponse>('/users/auth/verify-otp/', {
+//       method: 'POST',
+//       body: payload,
+//       credentials: 'include',
+//       async onRequest({ options }) {
+//         options.headers.set('Accept-Language', lang)
+//       }
+//     })
+//   }
+//
+//   const completeProfile = (payload: CompleteProfileRequest) => {
+//     return apiFetch<CompleteProfileResponse>('/users/auth/complete-profile/', {
+//       method: 'POST',
+//       body: payload,
+//       credentials: 'include',
+//       async onRequest({ options }) {
+//         options.headers.set('Accept-Language', lang)
+//       }
+//     })
+//   }
+//
+//   return { sendOtp, verifyOtp, completeProfile }
+// }
+
 
 import { apiFetch } from '~/core/api.fetch'
 import { useI18n } from 'vue-i18n'
+import { withAuthRetry } from '~/utils/withAuthRetry'
 import type {
   CompleteProfileRequest,
   CompleteProfileResponse,
@@ -67,40 +120,46 @@ import type {
 
 export const useAuthApi = () => {
   const { locale } = useI18n()
-  const lang = locale.value
 
-  const sendOtp = (payload: SendOtpRequest) => {
-    return apiFetch<SendOtpResponse>('/users/auth/send-otp/', {
-      method: 'POST',
-      body: payload,
-      credentials: 'include',
-      async onRequest({ options }) {
-        options.headers.set('Accept-Language', lang)
-      }
-    })
+  const sendOtp = (payload: SendOtpRequest) =>
+    withAuthRetry<SendOtpResponse>(() =>
+      apiFetch('/users/auth/send-otp/', {
+        method: 'POST',
+        body: payload,
+        credentials: 'include',
+        onRequest({ options }) {
+          options.headers.set('Accept-Language', locale.value)
+        }
+      })
+    )
+
+  const verifyOtp = (payload: VerifyOtpRequest) =>
+    withAuthRetry<VerifyOtpResponse>(() =>
+      apiFetch('/users/auth/verify-otp/', {
+        method: 'POST',
+        body: payload,
+        credentials: 'include',
+        onRequest({ options }) {
+          options.headers.set('Accept-Language', locale.value)
+        }
+      })
+    )
+
+  const completeProfile = (payload: CompleteProfileRequest) =>
+    withAuthRetry<CompleteProfileResponse>(() =>
+      apiFetch('/users/auth/complete-profile/', {
+        method: 'POST',
+        body: payload,
+        credentials: 'include',
+        onRequest({ options }) {
+          options.headers.set('Accept-Language', locale.value)
+        }
+      })
+    )
+
+  return {
+    sendOtp,
+    verifyOtp,
+    completeProfile
   }
-
-  const verifyOtp = (payload: VerifyOtpRequest) => {
-    return apiFetch<VerifyOtpResponse>('/users/auth/verify-otp/', {
-      method: 'POST',
-      body: payload,
-      credentials: 'include',
-      async onRequest({ options }) {
-        options.headers.set('Accept-Language', lang)
-      }
-    })
-  }
-
-  const completeProfile = (payload: CompleteProfileRequest) => {
-    return apiFetch<CompleteProfileResponse>('/users/auth/complete-profile/', {
-      method: 'POST',
-      body: payload,
-      credentials: 'include',
-      async onRequest({ options }) {
-        options.headers.set('Accept-Language', lang)
-      }
-    })
-  }
-
-  return { sendOtp, verifyOtp, completeProfile }
 }

@@ -167,7 +167,6 @@ async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
 
     const questionnaire = await createQuestionnaire(payload)
     questionnaireID.value = questionnaire.id
-    console.log(questionnaire)
 
   } catch (e) {
     console.log(e)
