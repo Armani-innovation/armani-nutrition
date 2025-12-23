@@ -29,21 +29,21 @@ onMounted(fetchInfos)
 
           <p
               dir="ltr"
-              class="text-xl font-semibold text-gray-800">
+              class="text-xl font-semibold text-green-600">
             {{ phone }}
           </p>
         </div>
 
-        <div class="text-end">
-          <p class="text-gray-500 text-sm">
-            {{ $t("dashboard.wallet") }}
-          </p>
+<!--        <div class="text-end">-->
+<!--          <p class="text-gray-500 text-sm">-->
+<!--            {{ $t("dashboard.wallet") }}-->
+<!--          </p>-->
 
-          <p class="text-xl font-bold text-green-600">
-            {{ walletBalance.toLocaleString() }}
-            {{ $t("dashboard.currency") }}
-          </p>
-        </div>
+<!--          <p class="text-xl font-bold text-green-600">-->
+<!--            {{ walletBalance.toLocaleString() }}-->
+<!--            {{ $t("dashboard.currency") }}-->
+<!--          </p>-->
+<!--        </div>-->
 
       </div>
     </div>

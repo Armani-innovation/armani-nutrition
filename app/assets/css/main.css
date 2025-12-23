@@ -21,8 +21,6 @@
 
 body {
   direction: rtl;
-  /*overflow-x: hidden;*/
-  /*overflow-y: hidden;*/
 }
 
 ::-webkit-scrollbar {

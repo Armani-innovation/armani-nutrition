@@ -6,4 +6,13 @@ interface reportsHistory {
   user: number
 }
 
-export type {reportsHistory};
+interface transactionHistory {
+  date: string
+  time: string
+  amount: string
+  payment: "paid" | "unpaid"
+  status: "done" | "pending"
+  description: string
+}
+
+export type {reportsHistory, transactionHistory};

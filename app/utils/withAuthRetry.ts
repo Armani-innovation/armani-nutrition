@@ -5,7 +5,7 @@ export async function withAuthRetry<T>(
     return await fn()
   } catch (error: any) {
     if (error?.status === 401) {
-      // refresh قبلاً انجام شده
+      // refresh
       return await fn()
     }
     throw error

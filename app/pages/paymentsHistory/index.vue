@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import {ref, computed} from "vue"
-
-interface Transaction {
-  date: string
-  time: string
-  amount: string
-  payment: "paid" | "unpaid"
-  status: "done" | "pending"
-  description: string
-}
+import type {transactionHistory} from "~/types/History";
 
 const phone = ref("09123456789")
 
-const transactions = ref<Transaction[]>([
+const transactions = ref<transactionHistory[]>([
   {date: "2025-11-24", time: "14:32", amount: "2,500,000", payment: "paid", status: "done", description: "productA"},
   {
     date: "2025-11-23",

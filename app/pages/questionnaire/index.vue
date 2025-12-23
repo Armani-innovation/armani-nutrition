@@ -113,7 +113,7 @@ function handleSubmit() {
           answer === null ||
           (Array.isArray(answer) && answer.length === 0)
       ) {
-        errors.value[q.id] = "این فیلد اجباری است"
+        errors.value[q.id] = $t('questionnaire.required')
         hasError = true
       }
     }
@@ -171,8 +171,6 @@ async function getQuestionnaireId(payload: QuestionnaireAnswers[]) {
   } catch (e) {
     console.log(e)
   }
-
-  // sessionStorage.setItem("questionnaireID", `${questionnaireID.value}`)
 
   navigateTo(`/paypage/${encrypt(questionnaireID.value.toString())}`)
 
@@ -254,7 +252,7 @@ onMounted(() => {
           </label>
         </div>
 
-        <!-- خطای سوال -->
+        <!-- QUESTION ERROR -->
         <div v-if="errors[q.id]" class="text-red-500 text-sm mt-1">
           {{ errors[q.id] }}
         </div>

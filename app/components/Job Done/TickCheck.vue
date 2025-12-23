@@ -13,7 +13,7 @@ onMounted(() => {
 <template>
   <div class="relative flex items-center justify-center">
 
-    <!-- SVG دایره + تیک -->
+    <!-- SVG -->
     <svg viewBox="0 0 52 52" class="w-24 h-24 relative z-10">
       <!-- Circle -->
       <circle
