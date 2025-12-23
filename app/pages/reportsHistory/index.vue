@@ -140,6 +140,7 @@ onMounted(() => {
           v-for="(item, index) in reports"
           :key="index"
           class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in"
+          @click="handleReport(item)"
       >
 
         <div class="flex justify-between mb-2">
