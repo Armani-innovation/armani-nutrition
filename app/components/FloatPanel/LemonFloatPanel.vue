@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "#vue-router"
-import {useCookie} from "#app";
 import {ref, onMounted} from 'vue'
+import {useAuthApi} from "~/composables/APIsAccess/useAuthApi";
 
+const {logOutRequest} = useAuthApi();
 
 type langs = "fa" | "en" | "ar"
 
@@ -45,12 +46,8 @@ function toggleMenu() {
 }
 
 function logOut(): void {
-  const access = useCookie('access_token')
-  const refresh = useCookie('refresh_token')
 
-  access.value = null
-  refresh.value = null
-
+  logOutRequest()
   sessionStorage.clear()
 
   isOpen.value = false

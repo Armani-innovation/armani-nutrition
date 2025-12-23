@@ -49,9 +49,22 @@ export const useAuthApi = () => {
       })
     )
 
+  const logOutRequest = () =>
+    withAuthRetry(() =>
+      apiFetch('/users/auth/logout/', {
+        method: 'POST',
+        body: {},
+        credentials: 'include',
+        onRequest({ options }) {
+          options.headers.set('Accept-Language', locale.value)
+        }
+      })
+    )
+
   return {
     sendOtp,
     verifyOtp,
-    completeProfile
+    completeProfile,
+    logOutRequest,
   }
 }
