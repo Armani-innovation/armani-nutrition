@@ -1,0 +1,28 @@
+# Build outputs & caches — rebuilt inside the image
+.output/
+.nuxt/
+dist/
+
+# Dependencies — reinstalled inside the image
+node_modules/
+
+# Editors / OS / VCS
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Local env (provided at runtime via docker-compose env_file / environment)
+.env
+.env.*
+!.env.example
+
+# Yarn Berry local install state (recomputed during build)
+.yarn/install-state.gz
+.yarn/cache/

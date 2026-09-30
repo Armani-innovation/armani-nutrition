@@ -1,5 +1,14 @@
 import tailwindcss from "@tailwindcss/vite";
 
+// SSR/Nitro proxy target (baked at build time). Prefer the dedicated SSR var so
+// NUXT_PUBLIC_API_BASE can stay origin-relative (/api) for the browser.
+const SSR_API_BASE =
+  process.env.NUXT_SSR_API_BASE ||
+  (process.env.NUXT_PUBLIC_API_BASE?.startsWith("http")
+    ? process.env.NUXT_PUBLIC_API_BASE
+    : undefined) ||
+  "http://backend:8000";
+
 export default defineNuxtConfig({
   modules: ["@nuxt/image", '@nuxtjs/i18n'],
   compatibilityDate: "2025-07-15",
@@ -15,7 +24,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     ENCRYPT_KEY: process.env.ENCRYPT_KEY,
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE
+      // Browser-facing base; apiFetch also hardcodes /api which nginx proxies.
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
     }
   },
 
@@ -35,8 +45,10 @@ export default defineNuxtConfig({
   },
   nitro: {
     routeRules: {
+      // SSR-side proxy: forward /api/** to the backend, stripping /api.
+      // (The browser also calls /api/** which nginx handles directly.)
       '/api/**': {
-        proxy: `http://85.198.11.236:9005/**`
+        proxy: `${SSR_API_BASE}/**`
       }
     }
   }

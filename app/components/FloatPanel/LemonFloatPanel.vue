@@ -84,7 +84,7 @@ onMounted(() => {
          md:group-hover:w-7"
           :class="isOpen ? 'w-7' : ''"
           @click="toggleMenu"
-          :style="{ background: 'linear-gradient(to bottom, var(--color-primary), #5a8d60)' }"
+          :style="{ background: 'linear-gradient(to bottom, #5a8d60, #5a8d60)' }"
       />
 
       <div
