@@ -1,4 +1,4 @@
-interface reportsHistory {
+interface ReportsHistory {
   created_at: string
   id: number
   is_paid: boolean
@@ -6,13 +6,24 @@ interface reportsHistory {
   user: number
 }
 
-interface transactionHistory {
-  date: string
-  time: string
-  amount: string
-  payment: "paid" | "unpaid"
-  status: "done" | "pending"
-  description: string
+interface PaymentUser {
+  id: number
+  phone: string
+  first_name: string
+  last_name: string
 }
 
-export type {reportsHistory, transactionHistory};
+interface PaymentHistory {
+  id: number
+  price: number
+  questionnaire: number
+  date: string
+  pid: number
+  created_at: string
+  successful: boolean
+  user: PaymentUser
+  description: string
+  authority: string | null
+}
+
+export type { ReportsHistory, PaymentHistory };

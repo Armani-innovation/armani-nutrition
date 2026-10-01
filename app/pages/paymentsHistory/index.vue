@@ -1,26 +1,49 @@
 <script setup lang="ts">
-import {ref, computed} from "vue"
-import type {transactionHistory} from "~/types/History";
+import {computed, onMounted, ref} from "vue"
+import {useI18n} from "vue-i18n"
+import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi"
+import type {PaymentHistory} from "~/types/History"
 
-const phone = ref("09123456789")
+const {locale} = useI18n()
+const {getPayments} = usePayPageApi()
 
-const transactions = ref<transactionHistory[]>([
-  {date: "2025-11-24", time: "14:32", amount: "2,500,000", payment: "paid", status: "done", description: "productA"},
-  {
-    date: "2025-11-23",
-    time: "09:15",
-    amount: "1,200,000",
-    payment: "unpaid",
-    status: "pending",
-    description: "serviceB"
-  },
-  {date: "2025-11-22", time: "18:50", amount: "500,000", payment: "paid", status: "done", description: "productC"},
-  {date: "2025-11-22", time: "18:50", amount: "500,000", payment: "paid", status: "done", description: "productC"},
-  {date: "2025-11-22", time: "18:50", amount: "500,000", payment: "paid", status: "done", description: "productC"},
-  {date: "2025-11-22", time: "18:50", amount: "500,000", payment: "paid", status: "done", description: "productC"}
-])
+const phone = ref("")
+const transactions = ref<PaymentHistory[]>([])
+const isLoading = ref(true)
+const loadError = ref(false)
 
 const reportCount = computed(() => transactions.value.length)
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat(locale.value, {dateStyle: 'short'}).format(new Date(value))
+}
+
+function formatTime(value: string) {
+  return new Intl.DateTimeFormat(locale.value, {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(value))
+}
+
+async function fetchPayments() {
+  phone.value = sessionStorage.getItem('phone') || ""
+  if (!phone.value) {
+    loadError.value = true
+    isLoading.value = false
+    return
+  }
+
+  try {
+    transactions.value = await getPayments(phone.value)
+  } catch (error) {
+    console.error('Failed to fetch payments', error)
+    loadError.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(fetchPayments)
 </script>
 
 <template>
@@ -53,8 +76,21 @@ const reportCount = computed(() => transactions.value.length)
       </div>
     </section>
 
+    <p v-if="isLoading" class="py-10 text-center text-gray-500">
+      {{ $t("payments.loading") }}
+    </p>
+
+    <p v-else-if="loadError" class="py-10 text-center text-red-600">
+      {{ $t("payments.loadError") }}
+    </p>
+
+    <p v-else-if="transactions.length === 0" class="py-10 text-center text-gray-500">
+      {{ $t("payments.empty") }}
+    </p>
+
     <!-- DESKTOP TABLE -->
     <section
+        v-else
         class="hidden md:block bg-white rounded-2xl shadow-md border border-gray-100 animate-fade-in overflow-x-auto">
 
       <div class="overflow-y-auto max-h-[250px]">
@@ -65,35 +101,31 @@ const reportCount = computed(() => transactions.value.length)
             <th class="p-4">{{ $t("payments.table.time") }}</th>
             <th class="p-4">{{ $t("payments.table.price") }}</th>
             <th class="p-4">{{ $t("payments.table.payment") }}</th>
-            <th class="p-4">{{ $t("payments.table.status") }}</th>
+            <th class="p-4">{{ $t("payments.table.description") }}</th>
           </tr>
           </thead>
 
           <tbody>
           <tr
-              v-for="(item, index) in transactions"
-              :key="index"
+              v-for="item in transactions"
+              :key="item.id"
               class="border-b hover:bg-gray-50 transition"
           >
 
-            <td class="p-4">{{ item.date }}</td>
-            <td class="p-4">{{ item.time }}</td>
+            <td class="p-4">{{ formatDate(item.created_at) }}</td>
+            <td class="p-4">{{ formatTime(item.created_at) }}</td>
             <td class="p-4">
-              {{ item.amount }}
+              {{ item.price.toLocaleString() }}
               {{ $t("payments.currency") }}
             </td>
 
             <td class="p-4">
-              <span :class="item.payment === 'paid' ? 'text-green-600' : 'text-red-600'">
-                {{ $t(`payments.payment.${item.payment}`) }}
+              <span :class="item.successful ? 'text-green-600' : 'text-red-600'">
+                {{ $t(`payments.payment.${item.successful ? 'paid' : 'unpaid'}`) }}
               </span>
             </td>
 
-            <td class="p-4">
-              <span :class="item.status === 'done' ? 'text-[#386641]' : 'text-gray-500'">
-                {{ $t(`payments.status.${item.status}`) }}
-              </span>
-            </td>
+            <td class="p-4">{{ item.description }}</td>
 
           </tr>
           </tbody>
@@ -102,28 +134,28 @@ const reportCount = computed(() => transactions.value.length)
     </section>
 
     <!-- MOBILE CARDS -->
-    <section class="md:hidden max-h-[400px] overflow-y-auto space-y-4">
+    <section v-if="!isLoading && !loadError && transactions.length" class="md:hidden max-h-[400px] overflow-y-auto space-y-4">
 
       <div
-          v-for="(item, index) in transactions"
-          :key="index"
+          v-for="item in transactions"
+          :key="item.id"
           class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in"
       >
 
         <div class="flex justify-between mb-2">
           <span class="text-gray-500 text-sm">{{ $t("payments.table.date") }}</span>
-          <span class="font-semibold text-gray-900">{{ item.date }}</span>
+          <span class="font-semibold text-gray-900">{{ formatDate(item.created_at) }}</span>
         </div>
 
         <div class="flex justify-between mb-2">
           <span class="text-gray-500 text-sm">{{ $t("payments.table.time") }}</span>
-          <span class="font-semibold text-gray-900">{{ item.time }}</span>
+          <span class="font-semibold text-gray-900">{{ formatTime(item.created_at) }}</span>
         </div>
 
         <div class="flex justify-between mb-2">
           <span class="text-gray-500 text-sm">{{ $t("payments.table.price") }}</span>
           <span class="font-semibold text-gray-900">
-            {{ item.amount }}
+            {{ item.price.toLocaleString() }}
             {{ $t("payments.currency") }}
           </span>
         </div>
@@ -132,20 +164,15 @@ const reportCount = computed(() => transactions.value.length)
           <span class="text-gray-500 text-sm">{{ $t("payments.table.payment") }}</span>
           <span
               class="font-semibold"
-              :class="item.payment === 'paid' ? 'text-green-600' : 'text-red-600'"
+              :class="item.successful ? 'text-green-600' : 'text-red-600'"
           >
-            {{ $t(`payments.payment.${item.payment}`) }}
+            {{ $t(`payments.payment.${item.successful ? 'paid' : 'unpaid'}`) }}
           </span>
         </div>
 
         <div class="flex justify-between">
-          <span class="text-gray-500 text-sm">{{ $t("payments.table.status") }}</span>
-          <span
-              class="font-semibold"
-              :class="item.status === 'done' ? 'text-[#386641]' : 'text-gray-500'"
-          >
-            {{ $t(`payments.status.${item.status}`) }}
-          </span>
+          <span class="text-gray-500 text-sm">{{ $t("payments.table.description") }}</span>
+          <span class="font-semibold text-gray-900">{{ item.description }}</span>
         </div>
 
       </div>

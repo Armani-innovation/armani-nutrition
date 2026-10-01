@@ -42,12 +42,15 @@
     "phone": "Phone number",
     "count": "Number of transactions",
     "currency": "Toman",
+    "loading": "Loading payment history...",
+    "loadError": "Failed to load payment history.",
+    "empty": "No payments have been recorded yet.",
     "table": {
       "date": "Date",
       "time": "Time",
       "price": "Amount",
       "payment": "Payment status",
-      "status": "Report status"
+      "description": "Description"
     },
     "payment": {
       "paid": "Paid",
@@ -279,9 +282,19 @@
     "priceLabel": "Payment amount",
     "currency": "Toman",
     "payBtn": "Pay & View Results",
+    "redirecting": "Redirecting to payment gateway...",
+    "paymentStartFailed": "Could not start the payment. Please try again.",
     "emptyDiscount": "Please enter a discount code.",
     "invalidDiscount": "Invalid discount code.",
     "discountApplied": "Discount applied successfully."
+  },
+  "paymentResult": {
+    "successTitle": "Payment successful",
+    "successDescription": "Your payment was verified successfully. You can now view your reports.",
+    "viewReports": "View reports",
+    "failureTitle": "Payment failed",
+    "failureDescription": "The payment was not verified or was cancelled. Please try again.",
+    "backToDashboard": "Back to dashboard"
   },
   "contactHint": "You can contact our consultants to receive practical solutions for resolving your issues.",
   "result": {

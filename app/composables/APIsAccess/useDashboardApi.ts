@@ -1,13 +1,13 @@
 import { apiFetch } from '~/core/api.fetch'
 import { useI18n } from 'vue-i18n'
 import { withAuthRetry } from '~/utils/withAuthRetry'
-import type { reportsHistory } from '~/types/History'
+import type { ReportsHistory } from '~/types/History'
 
 export const useDashboardApi = () => {
   const { locale } = useI18n()
 
   const getReports = () =>
-    withAuthRetry<reportsHistory[]>(() =>
+    withAuthRetry<ReportsHistory[]>(() =>
       apiFetch('/questionnaires/questionnaires/list/', {
         method: 'GET',
         credentials: 'include',

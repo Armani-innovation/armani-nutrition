@@ -44,6 +44,27 @@ interface CreateQuestionnaireResponse {
   created_at: string
   is_paid: boolean
   is_reported: boolean
+  question_answer: QuestionnaireAnswers[] | Record<string, unknown>
 }
 
-export type {Question, RawQuestion, QuestionnaireAnswers, CreateQuestionnaireResponse}
+interface QuestionnaireReport {
+  id: number
+  questionnaire: number
+  status: 'pending' | 'processing' | 'done' | 'error'
+  result: unknown | null
+  created_at: string
+  finish: string | null
+  task_id: string | null
+}
+
+interface QuestionnaireDetail extends CreateQuestionnaireResponse {
+  report: QuestionnaireReport | null
+}
+
+export type {
+  Question,
+  RawQuestion,
+  QuestionnaireAnswers,
+  CreateQuestionnaireResponse,
+  QuestionnaireDetail
+}

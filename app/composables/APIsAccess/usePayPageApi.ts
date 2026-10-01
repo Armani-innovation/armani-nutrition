@@ -1,13 +1,18 @@
 import { apiFetch } from '~/core/api.fetch'
 import { useI18n } from 'vue-i18n'
 import { withAuthRetry } from '~/utils/withAuthRetry'
-import type { fetchedPrice } from '~/types/PayPage'
+import type { PaymentHistory } from '~/types/History'
+import type {
+  FetchedPrice,
+  StartPaymentRequest,
+  StartPaymentResponse
+} from '~/types/PayPage'
 
 export const usePayPageApi = () => {
   const { locale } = useI18n()
 
   const getPrice = () =>
-    withAuthRetry<fetchedPrice>(() =>
+    withAuthRetry<FetchedPrice>(() =>
       apiFetch('/payments/discount/', {
         method: 'GET',
         credentials: 'include',
@@ -18,7 +23,7 @@ export const usePayPageApi = () => {
     )
 
   const checkDiscountCode = (discount_code: string) =>
-    withAuthRetry<fetchedPrice>(() =>
+    withAuthRetry<FetchedPrice>(() =>
       apiFetch('/payments/discount/', {
         method: 'POST',
         credentials: 'include',
@@ -29,17 +34,29 @@ export const usePayPageApi = () => {
       })
     )
 
-  const sendPayPage = (price: number) =>
-    withAuthRetry<any>(() =>
+  const startPayment = (payload: StartPaymentRequest) =>
+    withAuthRetry<StartPaymentResponse>(() =>
       apiFetch('/payments/request/', {
         method: 'POST',
         credentials: 'include',
-        body: { price },
+        body: payload,
         onRequest({ options }) {
           options.headers.set('Accept-Language', locale.value)
         }
       })
     )
 
-  return { getPrice, checkDiscountCode, sendPayPage }
+  const getPayments = (username: string) =>
+    withAuthRetry<PaymentHistory[]>(() =>
+      apiFetch('/payments/payment/list/', {
+        method: 'GET',
+        credentials: 'include',
+        query: { username },
+        onRequest({ options }) {
+          options.headers.set('Accept-Language', locale.value)
+        }
+      })
+    )
+
+  return { getPrice, checkDiscountCode, startPayment, getPayments }
 }

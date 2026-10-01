@@ -5,7 +5,7 @@ import TickCheck from "~/components/Job Done/TickCheck.vue"
 import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi";
 import {useRoute} from "#vue-router";
 
-const {getPrice, checkDiscountCode, sendPayPage} = usePayPageApi()
+const {getPrice, checkDiscountCode, startPayment} = usePayPageApi()
 
 const route = useRoute()
 
@@ -16,6 +16,8 @@ const discountText = ref<string>("")
 
 const price = ref<number>(0)
 const finalPrice = ref<number>(1000000)
+const isStartingPayment = ref(false)
+const paymentError = ref("")
 
 // ===== METHODS =====
 
@@ -51,11 +53,37 @@ async function applyDiscount() {
   }
 }
 
-function routeToPayPage() {
+async function routeToPayPage() {
   if (!finalPrice.value) {
-    navigateTo(`/result/${route.fullPath.toString().split('/').slice(2).join('/')}`)
-  } else {
-    sendPayPage(finalPrice.value / 10)
+    await navigateTo(`/result/${route.params.questionnaireID}`)
+    return
+  }
+
+  const username = sessionStorage.getItem('phone')
+  if (!username || isStartingPayment.value) {
+    paymentError.value = "paypage.paymentStartFailed"
+    return
+  }
+
+  isStartingPayment.value = true
+  paymentError.value = ""
+
+  try {
+    const payment = await startPayment({
+      price: finalPrice.value / 10,
+      description: `Questionnaire ${route.params.questionnaireID}`,
+      username
+    })
+
+    if (!payment.status || !payment.url) {
+      throw new Error('Payment URL was not returned')
+    }
+
+    window.location.assign(payment.url)
+  } catch (error) {
+    console.error('Failed to start payment', error)
+    paymentError.value = "paypage.paymentStartFailed"
+    isStartingPayment.value = false
   }
 }
 
@@ -135,10 +163,15 @@ onMounted(() => {
         <!-- PAY -->
         <button
             @click="routeToPayPage"
-            class="w-full block text-center bg-primary py-3 rounded-xl font-medium text-white transition hover:opacity-90"
+            :disabled="isStartingPayment"
+            class="w-full block text-center bg-primary py-3 rounded-xl font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {{ $t("paypage.payBtn") }}
+          {{ $t(isStartingPayment ? "paypage.redirecting" : "paypage.payBtn") }}
         </button>
+
+        <p v-if="paymentError" class="text-sm text-red-600 text-center">
+          {{ $t(paymentError) }}
+        </p>
 
       </div>
 

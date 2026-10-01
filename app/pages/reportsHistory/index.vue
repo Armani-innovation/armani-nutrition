@@ -2,7 +2,7 @@
 import {computed, onMounted, reactive} from "vue"
 import {useDashboardApi} from "~/composables/APIsAccess/useDashboardApi";
 import {useEncrypt} from "~/composables/useEncrypt";
-import type {reportsHistory} from "~/types/History";
+import type {ReportsHistory} from "~/types/History";
 import {navigateTo} from "#app";
 
 const {getReports} = useDashboardApi();
@@ -10,13 +10,13 @@ const {encrypt} = useEncrypt()
 
 const phone: string = sessionStorage.getItem("phone") || ""
 
-let reports = reactive<reportsHistory[]>([])
+let reports = reactive<ReportsHistory[]>([])
 
 const reportCount = computed(() => reports.length)
 
 async function fetchReports() {
 
-  let history = reactive<reportsHistory[]>([])
+  let history = reactive<ReportsHistory[]>([])
 
   try {
 
@@ -31,7 +31,7 @@ async function fetchReports() {
 
 }
 
-function handleReport(report: reportsHistory) {
+function handleReport(report: ReportsHistory) {
   if (report.is_reported) {
     navigateTo(`/result/${encrypt(report.id.toString())}`)
   }

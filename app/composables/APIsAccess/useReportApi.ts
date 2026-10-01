@@ -1,12 +1,13 @@
 import { apiFetch } from '~/core/api.fetch'
 import { useI18n } from 'vue-i18n'
 import { withAuthRetry } from '~/utils/withAuthRetry'
+import type { ReportStatusResponse, ReportTaskResponse } from '~/types/Report'
 
 export const useReportApi = () => {
   const { locale } = useI18n()
 
   const startReport = (questionnaireID: string) =>
-    withAuthRetry<any>(() =>
+    withAuthRetry<ReportTaskResponse>(() =>
       apiFetch(`/reports/start/${questionnaireID}/`, {
         method: 'POST',
         credentials: 'include',
@@ -17,7 +18,7 @@ export const useReportApi = () => {
     )
 
   const checkReport = (questionnaireID: string) =>
-    withAuthRetry<any>(() =>
+    withAuthRetry<ReportStatusResponse>(() =>
       apiFetch(`/reports/status/${questionnaireID}/`, {
         method: 'GET',
         credentials: 'include',
