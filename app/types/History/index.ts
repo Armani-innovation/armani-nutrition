@@ -23,7 +23,6 @@ interface PaymentHistory {
   successful: boolean
   user: PaymentUser
   description: string
-  authority: string | null
 }
 
 export type { ReportsHistory, PaymentHistory };

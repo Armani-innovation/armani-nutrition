@@ -34,7 +34,7 @@ async function fetchPayments() {
   }
 
   try {
-    transactions.value = await getPayments(phone.value)
+    transactions.value = await getPayments()
   } catch (error) {
     console.error('Failed to fetch payments', error)
     loadError.value = true

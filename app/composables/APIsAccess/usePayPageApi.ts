@@ -46,12 +46,11 @@ export const usePayPageApi = () => {
       })
     )
 
-  const getPayments = (username: string) =>
+  const getPayments = () =>
     withAuthRetry<PaymentHistory[]>(() =>
       apiFetch('/payments/payment/list/', {
         method: 'GET',
         credentials: 'include',
-        query: { username },
         onRequest({ options }) {
           options.headers.set('Accept-Language', locale.value)
         }

@@ -3,15 +3,17 @@ interface FetchedPrice {
 }
 
 interface StartPaymentRequest {
-  price: number
+  questionnaire_id: number
   description: string
-  username: string
+  discount_code?: string
 }
 
 interface StartPaymentResponse {
   status: boolean
   url: string
-  authority: string
+  authority: string | null
+  payment_id: number
+  amount: number
 }
 
 export type { FetchedPrice, StartPaymentRequest, StartPaymentResponse }

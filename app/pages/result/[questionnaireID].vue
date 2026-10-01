@@ -184,8 +184,13 @@ async function reportChecker() {
     const report = await checkReport(questionnaireID.value)
 
     if (report.status === 'done') {
+      const firstPrompt = report.result.prompts[0]
 
-      finalMessage.value = report.result.prompts[0].response
+      if (!firstPrompt?.response) {
+        throw new Error('Completed report does not contain a response')
+      }
+
+      finalMessage.value = firstPrompt.response
       await processMessage();
       markReportReady()
       clearInterval(interval)

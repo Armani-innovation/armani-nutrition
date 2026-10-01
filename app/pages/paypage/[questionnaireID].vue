@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {navigateTo} from "#app";
 import {ref, onMounted} from "vue"
 import TickCheck from "~/components/Job Done/TickCheck.vue"
 import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi";
@@ -13,6 +12,7 @@ const route = useRoute()
 const discountCode = ref<string>("")
 const isValid = ref<boolean>(true)
 const discountText = ref<string>("")
+const appliedDiscountCode = ref<string>("")
 
 const price = ref<number>(0)
 const finalPrice = ref<number>(1000000)
@@ -46,21 +46,17 @@ async function applyDiscount() {
   try {
     const discountedPrice = await checkDiscountCode(discountCode.value)
     finalPrice.value = discountedPrice.price
+    appliedDiscountCode.value = discountCode.value
     discountText.value = "paypage.discountApplied"
   } catch {
+    appliedDiscountCode.value = ""
     isValid.value = false
     discountText.value = "paypage.invalidDiscount"
   }
 }
 
 async function routeToPayPage() {
-  if (!finalPrice.value) {
-    await navigateTo(`/result/${route.params.questionnaireID}`)
-    return
-  }
-
-  const username = sessionStorage.getItem('phone')
-  if (!username || isStartingPayment.value) {
+  if (isStartingPayment.value) {
     paymentError.value = "paypage.paymentStartFailed"
     return
   }
@@ -70,9 +66,11 @@ async function routeToPayPage() {
 
   try {
     const payment = await startPayment({
-      price: finalPrice.value / 10,
+      questionnaire_id: Number(route.params.questionnaireID),
       description: `Questionnaire ${route.params.questionnaireID}`,
-      username
+      ...(appliedDiscountCode.value
+        ? {discount_code: appliedDiscountCode.value}
+        : {})
     })
 
     if (!payment.status || !payment.url) {
