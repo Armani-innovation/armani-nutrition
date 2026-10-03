@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import {useRoute} from '#vue-router'
+import {useEncrypt} from '~/composables/useEncrypt'
 
 const route = useRoute()
+const {encrypt} = useEncrypt()
 const destination = computed(() => {
   const questionnaireID = route.query.questionnaire_id
-  return questionnaireID ? `/result/${questionnaireID}` : '/reportsHistory'
+  const normalizedID = Array.isArray(questionnaireID) ? questionnaireID[0] : questionnaireID
+  return normalizedID ? `/result/${encrypt(normalizedID)}` : '/reportsHistory'
 })
 </script>
 
