@@ -5,7 +5,7 @@
 # =============================================================================
 
 # ---------- Stage 1: dependencies ----------
-FROM node:22-slim AS deps
+FROM docker-mirror.liara.ir/node:22-slim AS deps
 
 RUN corepack enable
 
@@ -16,7 +16,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --immutable --network-timeout 600000
 
 # ---------- Stage 2: build ----------
-FROM node:22-slim AS build
+FROM docker-mirror.liara.ir/node:22-slim AS build
 
 RUN corepack enable
 
@@ -35,7 +35,7 @@ ENV NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE} \
 RUN yarn build
 
 # ---------- Stage 3: runner ----------
-FROM node:22-slim AS runner
+FROM docker-mirror.liara.ir/node:22-slim AS runner
 
 WORKDIR /app
 
