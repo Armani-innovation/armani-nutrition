@@ -3,8 +3,10 @@ import {ref, onMounted} from "vue"
 import TickCheck from "~/components/Job Done/TickCheck.vue"
 import {usePayPageApi} from "~/composables/APIsAccess/usePayPageApi";
 import {useRoute} from "#vue-router";
+import {useEncrypt} from "~/composables/useEncrypt";
 
 const {getPrice, checkDiscountCode, startPayment} = usePayPageApi()
+const {decrypt} = useEncrypt()
 
 const route = useRoute()
 
@@ -65,9 +67,18 @@ async function routeToPayPage() {
   paymentError.value = ""
 
   try {
+    const routeQuestionnaireID = Array.isArray(route.params.questionnaireID)
+      ? route.params.questionnaireID[0]
+      : route.params.questionnaireID
+    const questionnaireID = Number(decrypt(routeQuestionnaireID ?? ''))
+
+    if (!Number.isSafeInteger(questionnaireID) || questionnaireID <= 0) {
+      throw new Error('Invalid questionnaire ID')
+    }
+
     const payment = await startPayment({
-      questionnaire_id: Number(route.params.questionnaireID),
-      description: `Questionnaire ${route.params.questionnaireID}`,
+      questionnaire_id: questionnaireID,
+      description: `Questionnaire ${questionnaireID}`,
       ...(appliedDiscountCode.value
         ? {discount_code: appliedDiscountCode.value}
         : {})
