@@ -81,6 +81,21 @@
       "pending": "Pending"
     }
   },
+  "historyDetails": {
+    "questionnaireTitle": "Questionnaire details",
+    "paymentTitle": "Payment details",
+    "questionnaireId": "Questionnaire ID",
+    "paymentId": "Payment ID",
+    "trackingId": "Tracking ID",
+    "answers": "Submitted answers",
+    "noAnswers": "There are no answers to display.",
+    "loading": "Loading details...",
+    "loadError": "Could not load the details.",
+    "viewReport": "View report",
+    "completePayment": "Complete payment",
+    "close": "Close",
+    "user": "User details"
+  },
   "common": {
     "yes": "Yes",
     "no": "No"

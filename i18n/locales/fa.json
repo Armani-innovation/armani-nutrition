@@ -83,6 +83,21 @@
       "false": "در حال بررسی"
     }
   },
+  "historyDetails": {
+    "questionnaireTitle": "جزئیات پرسش‌نامه",
+    "paymentTitle": "جزئیات پرداخت",
+    "questionnaireId": "شماره پرسش‌نامه",
+    "paymentId": "شماره پرداخت",
+    "trackingId": "شماره پیگیری",
+    "answers": "پاسخ‌های ثبت‌شده",
+    "noAnswers": "پاسخی برای نمایش وجود ندارد.",
+    "loading": "در حال دریافت جزئیات...",
+    "loadError": "دریافت جزئیات با خطا مواجه شد.",
+    "viewReport": "مشاهده گزارش",
+    "completePayment": "تکمیل پرداخت",
+    "close": "بستن",
+    "user": "مشخصات کاربر"
+  },
   "common": {
     "yes": "بله",
     "no": "خیر"

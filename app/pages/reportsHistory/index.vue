@@ -1,18 +1,64 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive} from "vue"
+import {computed, onMounted, reactive, ref} from "vue"
+import {useI18n} from "vue-i18n"
 import {useDashboardApi} from "~/composables/APIsAccess/useDashboardApi";
+import {useQuestionnaireApi} from "~/composables/APIsAccess/useQuestionnaireApi";
 import {useEncrypt} from "~/composables/useEncrypt";
 import type {ReportsHistory} from "~/types/History";
+import type {QuestionnaireAnswers, QuestionnaireDetail} from "~/types/Questionnaires";
 import {navigateTo} from "#app";
 
 const {getReports} = useDashboardApi();
+const {getQuestionnaire} = useQuestionnaireApi();
 const {encrypt} = useEncrypt()
+const {locale, t, te} = useI18n()
 
 const phone: string = sessionStorage.getItem("phone") || ""
 
 let reports = reactive<ReportsHistory[]>([])
 
 const reportCount = computed(() => reports.length)
+const selectedReport = ref<ReportsHistory | null>(null)
+const questionnaireDetail = ref<QuestionnaireDetail | null>(null)
+const isDetailOpen = ref(false)
+const isDetailLoading = ref(false)
+const detailLoadError = ref(false)
+const answers = computed<QuestionnaireAnswers[]>(() => {
+  const source = questionnaireDetail.value?.question_answer
+  return Array.isArray(source) ? source : []
+})
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat(locale.value, {dateStyle: 'medium'}).format(new Date(value))
+}
+
+function formatTime(value: string) {
+  return new Intl.DateTimeFormat(locale.value, {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(value))
+}
+
+function questionLabel(question: string) {
+  const key = `questions.${question}`
+  return te(key) ? t(key) : question
+}
+
+function answerLabel(answer: QuestionnaireAnswers) {
+  const options = answer.option ?? []
+  const translatedOptions = options.map((option) => {
+    const key = `questions.${answer.question}_options.${option}`
+    return te(key) ? t(key) : option
+  })
+  const values = [
+    ...translatedOptions,
+    answer.text_answer === null || answer.text_answer === ''
+      ? null
+      : String(answer.text_answer)
+  ].filter((value): value is string => Boolean(value))
+
+  return values.join('، ') || '—'
+}
 
 async function fetchReports() {
 
@@ -31,9 +77,36 @@ async function fetchReports() {
 
 }
 
-function handleReport(report: ReportsHistory) {
-  if (report.is_reported) {
-    navigateTo(`/result/${encrypt(report.id.toString())}`)
+async function openReportDetails(report: ReportsHistory) {
+  selectedReport.value = report
+  questionnaireDetail.value = null
+  detailLoadError.value = false
+  isDetailOpen.value = true
+  isDetailLoading.value = true
+
+  try {
+    questionnaireDetail.value = await getQuestionnaire(report.id)
+  } catch (error) {
+    console.error('Failed to fetch questionnaire details', error)
+    detailLoadError.value = true
+  } finally {
+    isDetailLoading.value = false
+  }
+}
+
+function closeDetails() {
+  isDetailOpen.value = false
+}
+
+function viewReport() {
+  if (selectedReport.value?.is_reported) {
+    navigateTo(`/result/${encrypt(selectedReport.value.id.toString())}`)
+  }
+}
+
+function completePayment() {
+  if (selectedReport.value && !selectedReport.value.is_paid) {
+    navigateTo(`/paypage/${encrypt(selectedReport.value.id.toString())}`)
   }
 }
 
@@ -104,7 +177,7 @@ onMounted(() => {
               v-for="(item, index) in reports"
               :key="index"
               class="border-b hover:bg-gray-50 transition cursor-pointer"
-              @click="handleReport(item)"
+              @click="openReportDetails(item)"
           >
 
             <td class="p-4">{{ item.created_at.toString().split('T')[0] }}</td>
@@ -139,8 +212,8 @@ onMounted(() => {
       <div
           v-for="(item, index) in reports"
           :key="index"
-          class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in"
-          @click="handleReport(item)"
+          class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in cursor-pointer"
+          @click="openReportDetails(item)"
       >
 
         <div class="flex justify-between mb-2">
@@ -190,6 +263,81 @@ onMounted(() => {
       </div>
 
     </section>
+
+    <HistoryDetailModal
+        :open="isDetailOpen"
+        :title="$t('historyDetails.questionnaireTitle')"
+        :subtitle="selectedReport ? `#${selectedReport.id} • ${formatDate(selectedReport.created_at)}` : undefined"
+        @close="closeDetails"
+    >
+      <div v-if="selectedReport" class="space-y-6">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('reports.table.payment') }}</p>
+            <p class="mt-1 font-semibold" :class="selectedReport.is_paid ? 'text-green-700' : 'text-red-600'">
+              {{ $t(`reports.payment.${selectedReport.is_paid}`) }}
+            </p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('reports.table.status') }}</p>
+            <p class="mt-1 font-semibold" :class="selectedReport.is_reported ? 'text-green-700' : 'text-amber-600'">
+              {{ $t(`reports.status.${selectedReport.is_reported}`) }}
+            </p>
+          </div>
+        </div>
+
+        <p v-if="isDetailLoading" class="py-8 text-center text-slate-500">
+          {{ $t('historyDetails.loading') }}
+        </p>
+        <p v-else-if="detailLoadError" class="rounded-2xl bg-red-50 p-4 text-center text-red-700">
+          {{ $t('historyDetails.loadError') }}
+        </p>
+        <div v-else>
+          <h3 class="mb-3 font-bold text-slate-900">{{ $t('historyDetails.answers') }}</h3>
+          <div v-if="answers.length" class="space-y-3">
+            <div
+                v-for="(answer, index) in answers"
+                :key="`${answer.question}-${index}`"
+                class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+            >
+              <p class="text-sm leading-6 text-slate-500">{{ questionLabel(answer.question) }}</p>
+              <p class="mt-1 font-semibold leading-7 text-slate-900">{{ answerLabel(answer) }}</p>
+            </div>
+          </div>
+          <p v-else class="rounded-2xl bg-slate-50 p-5 text-center text-slate-500">
+            {{ $t('historyDetails.noAnswers') }}
+          </p>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+              type="button"
+              class="rounded-xl border border-slate-200 px-5 py-2.5 font-medium text-slate-700 transition hover:bg-white"
+              @click="closeDetails"
+          >
+            {{ $t('historyDetails.close') }}
+          </button>
+          <button
+              v-if="selectedReport?.is_reported"
+              type="button"
+              class="rounded-xl bg-primary px-5 py-2.5 font-medium text-white transition hover:opacity-90"
+              @click="viewReport"
+          >
+            {{ $t('historyDetails.viewReport') }}
+          </button>
+          <button
+              v-else-if="selectedReport && !selectedReport.is_paid"
+              type="button"
+              class="rounded-xl bg-primary px-5 py-2.5 font-medium text-white transition hover:opacity-90"
+              @click="completePayment"
+          >
+            {{ $t('historyDetails.completePayment') }}
+          </button>
+        </div>
+      </template>
+    </HistoryDetailModal>
 
   </div>
 </template>

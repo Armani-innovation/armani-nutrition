@@ -81,6 +81,21 @@
       "pending": "قيد المراجعة"
     }
   },
+  "historyDetails": {
+    "questionnaireTitle": "تفاصيل الاستبيان",
+    "paymentTitle": "تفاصيل الدفع",
+    "questionnaireId": "رقم الاستبيان",
+    "paymentId": "رقم الدفع",
+    "trackingId": "رقم التتبع",
+    "answers": "الإجابات المسجلة",
+    "noAnswers": "لا توجد إجابات لعرضها.",
+    "loading": "جارٍ تحميل التفاصيل...",
+    "loadError": "تعذر تحميل التفاصيل.",
+    "viewReport": "عرض التقرير",
+    "completePayment": "إكمال الدفع",
+    "close": "إغلاق",
+    "user": "بيانات المستخدم"
+  },
   "common": {
     "yes": "نعم",
     "no": "لا"

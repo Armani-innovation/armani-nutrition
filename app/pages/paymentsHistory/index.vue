@@ -11,6 +11,8 @@ const phone = ref("")
 const transactions = ref<PaymentHistory[]>([])
 const isLoading = ref(true)
 const loadError = ref(false)
+const selectedPayment = ref<PaymentHistory | null>(null)
+const isDetailOpen = ref(false)
 
 const reportCount = computed(() => transactions.value.length)
 
@@ -41,6 +43,15 @@ async function fetchPayments() {
   } finally {
     isLoading.value = false
   }
+}
+
+function openPaymentDetails(payment: PaymentHistory) {
+  selectedPayment.value = payment
+  isDetailOpen.value = true
+}
+
+function closeDetails() {
+  isDetailOpen.value = false
 }
 
 onMounted(fetchPayments)
@@ -109,7 +120,8 @@ onMounted(fetchPayments)
           <tr
               v-for="item in transactions"
               :key="item.id"
-              class="border-b hover:bg-gray-50 transition"
+              class="border-b hover:bg-gray-50 transition cursor-pointer"
+              @click="openPaymentDetails(item)"
           >
 
             <td class="p-4">{{ formatDate(item.created_at) }}</td>
@@ -139,7 +151,8 @@ onMounted(fetchPayments)
       <div
           v-for="item in transactions"
           :key="item.id"
-          class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in"
+          class="bg-white rounded-xl shadow p-4 border border-gray-100 animate-scale-in cursor-pointer"
+          @click="openPaymentDetails(item)"
       >
 
         <div class="flex justify-between mb-2">
@@ -178,6 +191,71 @@ onMounted(fetchPayments)
       </div>
 
     </section>
+
+    <HistoryDetailModal
+        :open="isDetailOpen"
+        :title="$t('historyDetails.paymentTitle')"
+        :subtitle="selectedPayment ? `#${selectedPayment.id} • ${formatDate(selectedPayment.created_at)}` : undefined"
+        @close="closeDetails"
+    >
+      <div v-if="selectedPayment" class="space-y-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('historyDetails.paymentId') }}</p>
+            <p class="mt-1 font-semibold text-slate-900">#{{ selectedPayment.id }}</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('historyDetails.trackingId') }}</p>
+            <p class="mt-1 font-semibold text-slate-900">{{ selectedPayment.pid || '—' }}</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('historyDetails.questionnaireId') }}</p>
+            <p class="mt-1 font-semibold text-slate-900">#{{ selectedPayment.questionnaire }}</p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('payments.table.price') }}</p>
+            <p class="mt-1 font-semibold text-slate-900">
+              {{ selectedPayment.price.toLocaleString() }} {{ $t('payments.currency') }}
+            </p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('payments.table.payment') }}</p>
+            <p class="mt-1 font-semibold" :class="selectedPayment.successful ? 'text-green-700' : 'text-red-600'">
+              {{ $t(`payments.payment.${selectedPayment.successful ? 'paid' : 'unpaid'}`) }}
+            </p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <p class="text-xs text-slate-500">{{ $t('payments.table.time') }}</p>
+            <p class="mt-1 font-semibold text-slate-900">{{ formatTime(selectedPayment.created_at) }}</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-100 p-4">
+          <p class="text-xs text-slate-500">{{ $t('payments.table.description') }}</p>
+          <p class="mt-2 leading-7 text-slate-900">{{ selectedPayment.description || '—' }}</p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-100 p-4">
+          <p class="text-xs text-slate-500">{{ $t('historyDetails.user') }}</p>
+          <p class="mt-2 font-semibold text-slate-900">
+            {{ [selectedPayment.user.first_name, selectedPayment.user.last_name].filter(Boolean).join(' ') || '—' }}
+          </p>
+          <p dir="ltr" class="mt-1 w-max text-sm text-slate-500">{{ selectedPayment.user.phone }}</p>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end">
+          <button
+              type="button"
+              class="rounded-xl bg-primary px-5 py-2.5 font-medium text-white transition hover:opacity-90"
+              @click="closeDetails"
+          >
+            {{ $t('historyDetails.close') }}
+          </button>
+        </div>
+      </template>
+    </HistoryDetailModal>
 
   </div>
 </template>
